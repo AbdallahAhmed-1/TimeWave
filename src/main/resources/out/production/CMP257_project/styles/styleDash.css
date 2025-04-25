@@ -1,0 +1,66 @@
+:root {
+  /* source: https://colorhunt.co/palette/f6f1de3e3f5b8ab2a6acd3a8 */
+  --primary-color: #acd3a8;
+  --secondary-color: #8ab2a6;
+  --accent-color: #3e3f5b;
+  --dark-color: #f6f1de;
+  --light-color: #f8f9fa;
+}
+
+body {
+  background-color: var(--dark-color);
+}
+
+.card {
+  border-radius: 20px;
+  background-color: var(--light-color);
+  box-shadow: 0px 2px 5px var(--secondary-color);
+}
+
+.btn-primary {
+  background-color: var(--light-color);
+  color: var(--accent-color);
+  border: none;
+}
+.btn-primary:hover {
+  background-color: var(--secondary-color);
+  transition: 0.5s ease;
+}
+
+.btn-icon {
+  margin-right: 5px;
+  width: 25px;
+  height: auto;
+}
+.btn:hover {
+  background-color: var(--secondary-color);
+}
+
+.btn:hover .btn-icon {
+  filter: brightness(0) saturate(100%) invert(100%);
+  transition: 0.5s ease;
+}
+
+#new-entry {
+  padding: 0.5rem 1rem;
+  font-size: 1.2rem;
+  background-color: var(--primary-color);
+}
+
+.form-control {
+  resize: none;
+  height: auto;
+  overflow: hidden;
+}
+.form-control::placeholder {
+  color: lightgray;
+  text-align: center;
+  line-height: 1.5rem;
+  padding-top: 4rem;
+  padding-bottom: 3rem;
+}
+
+#mini-cards:hover {
+  box-shadow: 0px 2px 5px var(--secondary-color);
+  transition: 1s ease;
+}
