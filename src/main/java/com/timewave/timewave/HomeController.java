@@ -9,6 +9,13 @@ public class HomeController {
 
     @RequestMapping("/")
     public String index() {
+
+        String v= getViewName();
+        return v;
+    }
+
+    private String getViewName() {
+
         return "index.html";
     }
 }
