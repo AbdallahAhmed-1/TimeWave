@@ -7,6 +7,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class PageController {
+    // Render the home page
+    @GetMapping({"/", "/home"})
+    public String homePage() {
+        return "index";  // This will resolve to src/main/resources/templates/index.html
+    }
+
     // Render the login page
     @GetMapping("/login")
     public String loginPage() {
