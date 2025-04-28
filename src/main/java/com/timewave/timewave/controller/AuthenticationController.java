@@ -4,11 +4,9 @@ import com.timewave.timewave.auth.AuthenticationRequest;
 import com.timewave.timewave.auth.AuthenticationResponse;
 import com.timewave.timewave.auth.AuthenticationService;
 import com.timewave.timewave.auth.RegisterRequest;
-import com.timewave.timewave.model.User;
-import com.timewave.timewave.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 

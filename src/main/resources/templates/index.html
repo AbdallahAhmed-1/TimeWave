@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Place our custom styles after this so it doesn't interfere -->
-    <link rel="stylesheet" th:href="@{/static/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
 
@@ -19,8 +19,8 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <!-- Navbar Name -->
-<!--        Todo: Add logo here-->
-        <a class="navbar-brand" th:href="@{/static/images/}">
+        <!--        Todo: Add logo here-->
+        <a class="navbar-brand" th:href="@{/images/}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hourglass-split" viewBox="0 0 16 16">
                 <path d="M2.5 15a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 3V2h-1a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1zm2-13v1c0 .537.12 1.045.337 1.5h6.326c.216-.455.337-.963.337-1.5V2zm3 6.35c0 .701-.478 1.236-1.011 1.492A3.5 3.5 0 0 0 4.5 13s.866-1.299 3-1.48zm1 0v3.17c2.134.181 3 1.48 3 1.48a3.5 3.5 0 0 0-1.989-3.158C8.978 9.586 8.5 9.052 8.5 8.351z"/>
             </svg>
@@ -38,11 +38,11 @@
                 </li>
                 <!-- Item 2: Features -->
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{#features}">Features</a>
+                    <a class="nav-link" th:href="@{/#features}">Features</a>
                 </li>
                 <!-- Item 3: How it works -->
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{#how-it-works}">How it Works</a>
+                    <a class="nav-link" th:href="@{/#how-it-works}">How it Works</a>
                 </li>
             </ul>
             <!-- Login button -->
@@ -62,14 +62,14 @@
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
                 <!--Add href to where these buttons lead-->
                 <a role="button" class="btn btn-primary btn-lg px-4 me-sm-3" th:href="@{/login}">Start your journey</a>
-                <a role="button" class="btn btn-outline-secondary btn-lg px-4" th:href="@{#features}">See the demo</a>
+                <a role="button" class="btn btn-outline-secondary btn-lg px-4" th:href="@{/#features}">See the demo</a>
             </div>
         </div>
         <div class="overflow-hidden" style="max-height: 30vh;">
             <div class="container px-5">
                 <!-- We will have a screenshot of the dashboard here -->
                 <!-- Currently a placeholder -->
-                <img th:src="@{/static/images/placeholder.png}" class="img-fluid border rounded-3 shadow-lg mb-4"
+                <img th:src="@{/images/placeholder.png}" class="img-fluid border rounded-3 shadow-lg mb-4"
                      alt="Example image" width="700" height="500" loading="lazy">
             </div>
         </div>
@@ -166,7 +166,7 @@
         <div class="row g-5 align-items-center">
             <!-- Image on the left -->
             <div class="col-md-6">
-                <img th:src="@{/static/images/placeholder.png}" alt="interface" class="img-fluid rounded shadow">
+                <img th:src="@{/images/placeholder.png}" alt="interface" class="img-fluid rounded shadow">
             </div>
             <!-- Bullet points -->
             <div class="col-md-6">
@@ -268,24 +268,26 @@
         <div class="col-lg-2 col-md-4">
             <h5 class="fw-bold mb-3">Product</h5>
             <ul class="list-unstyled">
-                <li class="mb-2"><a th:href="@{#features}" class="text-decoration-none text-muted">Features</a></li>
-                <li class="mb-2"><a th:href="@{#pricing}" class="text-decoration-none text-muted">Pricing</a></li>
-                <li class="mb-2"><a th:href="@{#}" class="text-decoration-none text-muted">FAQ</a></li>
+                <li class="mb-2"><a th:href="@{/#features}" class="text-decoration-none text-muted">Features</a></li>
+                <li class="mb-2"><a th:href="@{/#pricing}" class="text-decoration-none text-muted">Pricing</a></li>
+                <li class="mb-2"><a th:href="@{/}" class="text-decoration-none text-muted">FAQ</a></li>
             </ul>
         </div>
         <div class="col-lg-2 col-md-4">
             <h5 class="fw-bold mb-3">Company</h5>
             <ul class="list-unstyled">
-                <li class="mb-2"><a th:href="@{#}" class="text-decoration-none text-muted">About</a></li>
-                <li class="mb-2"><a th:href="@{#}" class="text-decoration-none text-muted">Blog</a></li>
-                <li class="mb-2"><a th:href="@{#}" class="text-decoration-none text-muted">Careers</a></li>
+                <li class="mb-2"><a th:href="@{/}" class="text-decoration-none text-muted">About</a></li>
+                <li class="mb-2"><a th:href="@{/}" class="text-decoration-none text-muted">Blog</a></li>
+                <li class="mb-2"><a th:href="@{/}" class="text-decoration-none text-muted">Careers</a></li>
             </ul>
         </div>
         <div class="col-lg-4 col-md-4">
             <h5 class="fw-bold mb-3">Stay Updated</h5>
             <p class="text-muted mb-3">Join our newsletter for updates and new features.</p>
             <div class="input-group mb-3">
-                <input type="email" class="form-control" placeholder="Your email">
+                <label>
+                    <input type="email" class="form-control" placeholder="Your email">
+                </label>
                 <button class="btn btn-primary" type="button">Subscribe</button>
             </div>
         </div>
@@ -297,15 +299,15 @@
         </div>
         <div class="col-md-6">
             <ul class="list-inline float-md-end mb-0">
-                <li class="list-inline-item"><a th:href="@{#}" class="text-muted">Privacy</a></li>
-                <li class="list-inline-item ms-3"><a th:href="@{#}" class="text-muted">Terms</a></li>
-                <li class="list-inline-item ms-3"><a th:href="@{#}" class="text-muted">Help</a></li>
+                <li class="list-inline-item"><a th:href="@{/}" class="text-muted">Privacy</a></li>
+                <li class="list-inline-item ms-3"><a th:href="@{/}" class="text-muted">Terms</a></li>
+                <li class="list-inline-item ms-3"><a th:href="@{/}" class="text-muted">Help</a></li>
             </ul>
         </div>
     </div>
 </footer>
 <!-- main script -->
-<script th:src="@{/static/js/index.js}" src="../static/static/js/index.js"></script>
+<script th:src="@{/js/index.js}"></script>
 <!-- Bootstrap script -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

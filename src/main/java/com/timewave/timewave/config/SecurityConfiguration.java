@@ -26,7 +26,7 @@ public class SecurityConfiguration {
                 // whitelist
                 .authorizeHttpRequests((
                         authorizeHttpRequests) -> authorizeHttpRequests
-                        .requestMatchers("/api/v1/auth/**", "/", "/home", "/login","/images/**", "/css/**", "/js/**", "/static/**")
+                        .requestMatchers("/api/v1/auth/**", "/", "/home", "/login","/images/**")
                         .permitAll()
                         .anyRequest()
                         .authenticated()
