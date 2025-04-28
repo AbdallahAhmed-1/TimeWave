@@ -7,43 +7,26 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
+// endpoints to expose
 @RestController
-@RequestMapping("/auth")
-public class AuthController {
+@RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
+public class AuthenticationController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final AuthenticationService service;
 
-    // Create a password encoder
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    // LOGIN
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password) {
-        return userRepository.findByEmail(email)
-                .map(user -> {
-                    if (passwordEncoder.matches(password, user.getPassword())) {
-                        return ResponseEntity.ok("Login success!");
-                    } else {
-                        return ResponseEntity.status(401).body("Wrong password");
-                    }
-                })
-                .orElse(ResponseEntity.status(404).body("User not found"));
-    }
-
-    // REGISTER
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestParam String username,
-                                           @RequestParam String email,
-                                           @RequestParam String password) {
-        // Check if user already exists
-        if (userRepository.findByEmail(email).isPresent()) {
-            return ResponseEntity.status(400).body("Email already in use");
-        }
+    public ResponseEntity<AuthenticationResponse> register(
+            @RequestBody RegisterRequest request
+    ){
+        return ResponseEntity.ok(service.register(request));
 
-        // Create a new user with encrypted password
-        User newUser = new User(username, email, passwordEncoder.encode(password));
-        userRepository.save(newUser);
-        return ResponseEntity.ok("User registered successfully!");
+    }
+    @PostMapping("/authenticate")
+    public ResponseEntity<AuthenticationResponse> register(
+            @RequestBody AuthenticationRequest request
+    ){
+        return ResponseEntity.ok(service.authenticate(request));
+
     }
 }
