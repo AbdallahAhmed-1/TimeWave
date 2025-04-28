@@ -83,4 +83,36 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+    // form submission to REST endpoint
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        fetch('/api/v1/auth/authenticate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
+        })
+            .then(response => {
+                if (response.ok) return response.json();
+                throw new Error('Login failed');
+            })
+            .then(data => {
+                // Store token in localStorage
+                localStorage.setItem('token', data.token);
+                // Redirect to dashboard
+                window.location.href = '/dashboard';
+            })
+            .catch(error => {
+                // Show error message
+                document.getElementById('error-message').style.display = 'block';
+            });
+    });
 });

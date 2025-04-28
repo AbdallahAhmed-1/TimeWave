@@ -19,15 +19,15 @@ public class PageController {
         return "login";  // This will resolve to src/main/resources/templates/login.html
     }
 
-    // Handle the login form submission
-    @PostMapping("/login")
-    public String loginSubmit(@RequestParam String email, @RequestParam String password) {
-        // Authenticate the user (example check)
-        if ("admin@example.com".equals(email) && "password123".equals(password)) {
-            return "redirect:/home";  // Redirect to home if successful
-        }
-        return "redirect:/login?error";  // Redirect back to login page with error
-    }
+//    // Handle the login form submission
+//    @PostMapping("/login")
+//    public String loginSubmit(@RequestParam String email, @RequestParam String password) {
+//        // Authenticate the user (example check)
+//        if ("admin@example.com".equals(email) && "password123".equals(password)) {
+//            return "redirect:/home";  // Redirect to home if successful
+//        }
+//        return "redirect:/login?error";  // Redirect back to login page with error
+//    }
 
     @GetMapping({"/", "/home"})
     public String homePage(Model model) {
