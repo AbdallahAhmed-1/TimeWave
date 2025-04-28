@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
   nameField.style.display = 'none';
   form.insertBefore(nameField, form.querySelector('.mb-3'));
 
-<<<<<<< HEAD:src/main/resources/static/static/js/loginPage.js
   const confirmField = document.createElement('div');
   confirmField.className = 'mb-3 signup-field';
   confirmField.innerHTML = `
@@ -30,16 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
 `;
   confirmField.style.display = 'none';
   form.insertBefore(confirmField, submitBtn);
-=======
-    const confirmField = document.createElement('div');
-    confirmField.className = 'mb-3 signup-field';
-    confirmField.innerHTML = `
-    <label for="confirmPassword" class="form-label">Confirm Password</label>
-    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required>
-  `;
-    confirmField.style.display = 'none';
-    form.insertBefore(confirmField, submitBtn);
->>>>>>> 1cc8faf40fd6faf7cf10030e291950bfa15d0959:src/main/resources/static/js/loginPage.js
 
   let isLogin = true;
   updateForm();
@@ -68,17 +57,10 @@ document.addEventListener('DOMContentLoaded', function() {
       }
   }
 
-<<<<<<< HEAD:src/main/resources/static/static/js/loginPage.js
   form.addEventListener('submit', async e => {
-=======
-    form.addEventListener('submit', async e => {
-
-        e.preventDefault();
->>>>>>> 1cc8faf40fd6faf7cf10030e291950bfa15d0959:src/main/resources/static/js/loginPage.js
 
       e.preventDefault();
 
-<<<<<<< HEAD:src/main/resources/static/static/js/loginPage.js
       const email    = form.email.value.trim();
       const password = form.password.value;
       let url, body;
@@ -130,54 +112,5 @@ document.addEventListener('DOMContentLoaded', function() {
           console.error(err);
           alert('Something went wrong.');
       }
-=======
-        if (isLogin) {
-            url  = '/api/v1/auth/authenticate';
-            JSON.stringify({ email, password });
-        } else {
-            const username        = form.username.value.trim();
-            const confirmPassword = form.confirmPassword.value;
-            if (password !== confirmPassword) {
-                return alert('Passwords do not match!');
-            }
-            url  = '/api/v1/auth/register';
-            body = JSON.stringify({
-                username: username,
-                email: email,
-                password: password});
-
-        }
-
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body
-            });
-            if (response.ok) {
-                const data = await response.json();
-                localStorage.setItem('token', data.token);
-
-                if(!isLogin) {
-                    alert('Registration successful. Please log in.');
-                    isLogin = true;
-                    updateForm();
-                    form.reset();
-                }
-                else{
-                    window.location.href = '/dashboard';
-                }
-            }
-            else{
-                const text = await response.text();
-                alert((isLogin ? 'Login' : 'Registration') + ' failed. ' + (text.length > 0 ? text : 'Please try again.'))
-            }
-        } catch (err) {
-            console.error(err);
-            alert('Something went wrong.');
-        }
->>>>>>> 1cc8faf40fd6faf7cf10030e291950bfa15d0959:src/main/resources/static/js/loginPage.js
 });
 })
