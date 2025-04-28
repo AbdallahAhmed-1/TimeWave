@@ -13,8 +13,6 @@ import com.timewave.timewave.model.Memory;
 
 @Controller
 public class PageController {
-
-
     // Render the login page
     @GetMapping("/login")
     public String loginPage() {
