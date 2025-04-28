@@ -36,3 +36,20 @@ footer {
     background-color: #f8f9fa;
     padding: 3rem 1rem;
 }
+
+.hero img {
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    border-radius: 4px;
+  }
+  
+
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  

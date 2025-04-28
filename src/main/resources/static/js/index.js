@@ -15,3 +15,19 @@ window.addEventListener("DOMContentLoaded", function () {
     typewriterEffect(div, text);
   });
   
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('newsletter-form');
+    if (!form) return;
+  
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const email = document.getElementById('newsletter-email').value.trim();
+      if (!email) {
+        alert('Please enter a valid email address.');
+      } else {
+        alert(`Thanks for subscribing, ${email}!`);
+        form.reset();
+      }
+    });
+  });
+  
