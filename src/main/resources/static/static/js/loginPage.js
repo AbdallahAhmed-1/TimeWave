@@ -1,114 +1,116 @@
+
+
+
+
 document.addEventListener('DOMContentLoaded', function() {
-    const form         = document.querySelector('form#loginForm');
-    const heading      = document.querySelector('h1');
-    const submitBtn    = document.querySelector('button[type="submit"]');
-    const toggleContainer = document.createElement('div');
-    toggleContainer.className = 'mt-3 text-center';
-    form.after(toggleContainer);
-  
-    // Signup extra fields
-    const nameField = document.createElement('div');
-    nameField.className = 'mb-3 signup-field';
-    nameField.innerHTML = `
-      <label for="name" class="form-label">Username</label>
-      <input type="text" class="form-control" id="name" name="username" placeholder="Your name" required>
-    `;
-    nameField.style.display = 'none';
-    form.insertBefore(nameField, form.querySelector('.mb-3'));
-  
-    const confirmField = document.createElement('div');
-    confirmField.className = 'mb-3 signup-field';
-    confirmField.innerHTML = `
-      <label for="confirmPassword" class="form-label">Confirm Password</label>
-      <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required>
-    `;
-    confirmField.style.display = 'none';
-    submitBtn.parentNode.before(confirmField);
-  
-    let isLogin = true;
-    updateForm();
-  
-    // Toggle between Login and Signup
-    toggleContainer.addEventListener('click', e => {
+
+  const form       = document.querySelector('form#loginForm');
+  const heading    = document.querySelector('h1');
+  const submitBtn  = document.querySelector('button[type="submit"]');
+  const toggleContainer = document.createElement('div');
+  toggleContainer.className = 'mt-3 text-center';
+  form.after(toggleContainer);
+
+  // Signup extra fields
+  const nameField = document.createElement('div');
+  nameField.className = 'mb-3 signup-field';
+  nameField.innerHTML = `
+  <label for="name" class="form-label">Username</label>
+  <input type="text" class="form-control" id="name" name="username" placeholder="Your name" required>
+`;
+  nameField.style.display = 'none';
+  form.insertBefore(nameField, form.querySelector('.mb-3'));
+
+  const confirmField = document.createElement('div');
+  confirmField.className = 'mb-3 signup-field';
+  confirmField.innerHTML = `
+  <label for="confirmPassword" class="form-label">Confirm Password</label>
+  <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required>
+`;
+  confirmField.style.display = 'none';
+  form.insertBefore(confirmField, submitBtn);
+
+  let isLogin = true;
+  updateForm();
+
+  toggleContainer.addEventListener('click', e => {
       if (e.target.matches('#toggleForm')) {
-        e.preventDefault();
-        isLogin = !isLogin;
-        updateForm();
+          e.preventDefault();
+          isLogin = !isLogin;
+          updateForm();
       }
-    });
-  
-    function updateForm() {
+  });
+
+  function updateForm() {
       if (isLogin) {
-        heading.textContent = 'Log into TimeWeave';
-        submitBtn.textContent = 'Log in';
-        toggleContainer.innerHTML = `Don’t have an account? <a href="#" id="toggleForm">Sign up</a>`;
-        document.querySelectorAll('.signup-field').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.signup-field input').forEach(i => i.required = false);
+          heading.textContent = 'Log into TimeWeave';
+          submitBtn.textContent = 'Log in';
+          toggleContainer.innerHTML = `Don’t have an account? <a href="#" id="toggleForm">Sign up</a>`;
+          document.querySelectorAll('.signup-field').forEach(el => el.style.display = 'none');
+          document.querySelectorAll('.signup-field input').forEach(i => i.required = false);
       } else {
-        heading.textContent = 'Sign up for TimeWeave';
-        submitBtn.textContent = 'Sign up';
-        toggleContainer.innerHTML = `Already have an account? <a href="#" id="toggleForm">Log in</a>`;
-        document.querySelectorAll('.signup-field').forEach(el => el.style.display = 'block');
-        document.querySelectorAll('.signup-field input').forEach(i => i.required = true);
+          heading.textContent = 'Sign up for TimeWeave';
+          submitBtn.textContent = 'Sign up';
+          toggleContainer.innerHTML = `Already have an account? <a href="#" id="toggleForm">Log in</a>`;
+          document.querySelectorAll('.signup-field').forEach(el => el.style.display = 'block');
+          document.querySelectorAll('.signup-field input').forEach(i => i.required = true);
       }
-    }
-  
-    form.addEventListener('submit', async e => {
+  }
+
+  form.addEventListener('submit', async e => {
+
       e.preventDefault();
-  
-      // New validation before sending
+
       const email    = form.email.value.trim();
       const password = form.password.value;
-      if (isLogin) {
-        if (!email || !password) {
-          return alert('Please enter both email and password.');
-        }
-      } else {
-        const username        = form.username.value.trim();
-        const confirmPassword = form.confirmPassword.value;
-        if (!username) {
-          return alert('Please enter a username.');
-        }
-        if (password !== confirmPassword) {
-          return alert('Passwords do not match!');
-        }
-      }
-  
-      // Determine endpoint + request body
       let url, body;
+
       if (isLogin) {
-        url  = '/auth/login';
-        body = `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+          url  = '/api/v1/auth/authenticate';
+          JSON.stringify({ email, password });
       } else {
-        const username = form.username.value.trim();
-        url  = '/auth/register';
-        body = `username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
-      }
-  
-      try {
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body
-        });
-  
-        if (res.ok) {
-          if (!isLogin) {
-            alert('Registration successful! Please log in.');
-            isLogin = true;
-            updateForm();
-            form.reset();
-          } else {
-            window.location.href = 'dashboard.html';
+          const username        = form.username.value.trim();
+          const confirmPassword = form.confirmPassword.value;
+          if (password !== confirmPassword) {
+              return alert('Passwords do not match!');
           }
-        } else {
-          const text = await res.text();
-          alert((isLogin ? 'Login' : 'Signup') + ' failed: ' + text);
-        }
-      } catch (err) {
-        console.error(err);
-        alert('Something went wrong.');
+          url  = '/api/v1/auth/register';
+          body = JSON.stringify({
+              username: username,
+              email: email,
+              password: password});
+
       }
-    });
-  });
-  
+
+      try {
+          const response = await fetch(url, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body
+          });
+          if (response.ok) {
+              const data = await response.json();
+              localStorage.setItem('token', data.token);
+
+              if(!isLogin) {
+                  alert('Registration successful. Please log in.');
+                  isLogin = true;
+                  updateForm();
+                  form.reset();
+              }
+              else{
+                  window.location.href = '/dashboard';
+              }
+          }
+          else{
+              const text = await response.text();
+              alert((isLogin ? 'Login' : 'Registration') + ' failed. ' + (text.length > 0 ? text : 'Please try again.'))
+          }
+      } catch (err) {
+          console.error(err);
+          alert('Something went wrong.');
+      }
+});
+})
