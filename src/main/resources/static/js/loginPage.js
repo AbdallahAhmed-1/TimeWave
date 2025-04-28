@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required>
   `;
     confirmField.style.display = 'none';
-    submitBtn.parentNode.before(confirmField);
+    form.insertBefore(confirmField, submitBtn);
 
     let isLogin = true;
     updateForm();
@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     form.addEventListener('submit', async e => {
+
         e.preventDefault();
 
         const email    = form.email.value.trim();
@@ -64,42 +65,51 @@ document.addEventListener('DOMContentLoaded', function() {
         let url, body;
 
         if (isLogin) {
-            url  = '/auth/login';
-            body = `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+            url  = '/api/v1/auth/authenticate';
+            JSON.stringify({ email, password });
         } else {
             const username        = form.username.value.trim();
             const confirmPassword = form.confirmPassword.value;
             if (password !== confirmPassword) {
                 return alert('Passwords do not match!');
             }
-            url  = '/auth/register';
-            body = `username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+            url  = '/api/v1/auth/register';
+            body = JSON.stringify({
+                username: username,
+                email: email,
+                password: password});
+
         }
 
         try {
-            const res = await fetch(url, {
+            const response = await fetch(url, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body
             });
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('token', data.token);
 
-            if (res.ok) {
-                if (!isLogin) {
-                    alert('Registration successful! Please log in.');
+                if(!isLogin) {
+                    alert('Registration successful. Please log in.');
                     isLogin = true;
                     updateForm();
                     form.reset();
-                } else {
-                    window.location.href = 'dashboard.html';
                 }
-            } else {
-                const text = await res.text();
-                alert((isLogin ? 'Login' : 'Signup') + ' failed: ' + text);
+                else{
+                    window.location.href = '/dashboard';
+                }
+            }
+            else{
+                const text = await response.text();
+                alert((isLogin ? 'Login' : 'Registration') + ' failed. ' + (text.length > 0 ? text : 'Please try again.'))
             }
         } catch (err) {
             console.error(err);
             alert('Something went wrong.');
         }
-    });
-
 });
+})
