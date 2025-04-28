@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,7 +13,7 @@
             crossorigin="anonymous"/>
 
     <!-- Your custom styles -->
-    <link th:href="@{/styles/styleDash.css}" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/static/css/styleDash.css}">
 </head>
 <body>
 <div class="container mt-4">
@@ -22,16 +22,16 @@
         <div class="card p-3">
             <div class="d-flex">
                 <button class="btn btn-primary me-3">
-                    <img th:src="@{/dashboard/timeline-icon.png}" alt="Timeline" class="btn-icon"/> Timeline
+                    <img th:src="@{/static/dashboard/timeline-icon.png}" alt="Timeline" class="btn-icon"/>
                 </button>
                 <button class="btn btn-primary me-3">
-                    <img th:src="@{static/static/dashboard/calendar-icon.png}" alt="Calendar" class="btn-icon"/> Calendar
+                    <img th:src="@{/static/dashboard/calendar-icon.png}" alt="Calendar" class="btn-icon"/>
                 </button>
                 <button class="btn btn-primary me-3">
-                    <img th:src="@{/dashboard/map-icon.png}" alt="Map" class="btn-icon"/> Map
+                    <img th:src="@{/static/dashboard/map-icon.png}" alt="Map" class="btn-icon"/>
                 </button>
                 <button class="btn btn-primary me-3">
-                    <img th:src="@{/dashboard/insights-icon.png}" alt="Insights" class="btn-icon"/> Insights
+                    <img th:src="@{/static/dashboard/insights-icon.png}" alt="Insights" class="btn-icon"/>
                 </button>
             </div>
         </div>
@@ -74,6 +74,7 @@
     </div>
 </div>
 
+<script th:src="@{/static/js/dashboard.js}"></script>
 <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

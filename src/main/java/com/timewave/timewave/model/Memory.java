@@ -35,6 +35,18 @@ public class Memory {
         this.user = user;
     }
 
+    // Constructor without User
+    public Memory(String title, String description, String date, String location, String mood) {
+        this.title = title;
+        this.description = description;
+        this.date = date;
+        this.location = location;
+        this.mood = mood;
+    }
+
+
+
+
     // Getters and Setters
     public Long getId() {
         return id;

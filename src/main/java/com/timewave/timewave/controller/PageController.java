@@ -5,6 +5,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import org.springframework.ui.Model;
+import java.util.Arrays;
+import java.util.List;
+
+import com.timewave.timewave.model.Memory;
+
 @Controller
 public class PageController {
     // Render the home page
@@ -28,4 +34,23 @@ public class PageController {
         }
         return "redirect:/login?error";  // Redirect back to login page with error
     }
+
+    @GetMapping({"/", "/home"})
+    public String homePage(Model model) {
+        // Dummy memories
+        List<Memory> memories = Arrays.asList(
+                new Memory("Trip to Paris", "Saw the Eiffel Tower", "2023-04-20", "Paris", "relax"),
+                new Memory("Beach day", "Relaxed by the sea", "2024-07-15", "Barcelona", "anxious")
+        );
+
+        // Dummy "On This Day"
+        String onThisDay = "Today, 2 years ago, you graduated! 🎓";
+
+        // Attach to model
+        model.addAttribute("memories", memories);
+        model.addAttribute("onThisDay", onThisDay);
+
+        return "index";  // Still render index.html
+    }
+
 }
