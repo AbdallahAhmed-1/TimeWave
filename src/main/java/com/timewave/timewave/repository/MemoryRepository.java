@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface MemoryRepository extends JpaRepository<Memory, Long> {
     // Method to find memories by user
-    List<Memory> findByUserId(Long userId);
+    List<Memory> findByUserId(Integer userId);
 }
