@@ -1,16 +1,14 @@
 package com.timewave.timewave.controller;
 
 import com.timewave.timewave.model.Memory;
-import com.timewave.timewave.model.User;
+
 import com.timewave.timewave.repository.MemoryRepository;
 import com.timewave.timewave.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.core.Authentication;
-//import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api/memories")

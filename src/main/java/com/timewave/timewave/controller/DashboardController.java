@@ -4,6 +4,10 @@ import com.timewave.timewave.model.User;
 import com.timewave.timewave.model.Memory;
 import com.timewave.timewave.repository.UserRepository;
 import com.timewave.timewave.repository.MemoryRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,18 +20,21 @@ public class DashboardController {
 
     private final UserRepository userRepository;
     private final MemoryRepository memoryRepository;
+    private final UserDetailsService userDetailsService;
 
     public DashboardController(UserRepository userRepository,
-                               MemoryRepository memoryRepository) {
+                               MemoryRepository memoryRepository, UserDetailsService userDetailsService) {
         this.userRepository = userRepository;
         this.memoryRepository = memoryRepository;
+        this.userDetailsService = userDetailsService;
     }
 
     @GetMapping("/dashboard")
-    public String dashboard(Model model, Principal principal) {
+    public String dashboard(Authentication authentication, Model model) {
         // Fetch the logged-in user
-        User user = userRepository.findByEmail(principal.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String email = userDetails.getUsername();
+        User user = userRepository.findByEmail(email) .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         // Fetch that user's memories
         List<Memory> memories = memoryRepository.findByUserId(user.getId());
