@@ -57,7 +57,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
   }
 
-<<<<<<< HEAD
 
     const errorMessage = document.getElementById('error-message');
     // Form submission handler
@@ -102,6 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     return response.json();
                 })
                 .then(data => {
+                    console.log("Login response: ", data.token);
                     // Store token in localStorage
                     localStorage.setItem('token', data.token);
                     // Redirect to dashboard
@@ -144,62 +144,60 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         }
     });
-=======
-  form.addEventListener('submit', async e => {
-
-      e.preventDefault();
-
-      const email    = form.email.value.trim();
-      const password = form.password.value;
-      let url, body;
-
-      if (isLogin) {
-          url  = '/api/v1/auth/authenticate';
-          body= JSON.stringify({ email, password });
-      } else {
-          const username        = form.username.value.trim();
-          const confirmPassword = form.confirmPassword.value;
-          if (password !== confirmPassword) {
-              return alert('Passwords do not match!');
-          }
-          url  = '/api/v1/auth/register';
-          body = JSON.stringify({
-              username: username,
-              email: email,
-              password: password});
-
-      }
-
-      try {
-          const response = await fetch(url, {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body
-          });
-          if (response.ok) {
-              const data = await response.json();
-              localStorage.setItem('token', data.token);
-
-              if(!isLogin) {
-                  alert('Registration successful. Please log in.');
-                  isLogin = true;
-                  updateForm();
-                  form.reset();
-              }
-              else{
-                  window.location.href = '/dashboard';
-              }
-          }
-          else{
-              const text = await response.text();
-              alert((isLogin ? 'Login' : 'Registration') + ' failed. ' + (text.length > 0 ? text : 'Please try again.'))
-          }
-      } catch (err) {
-          console.error(err);
-          alert('Something went wrong.');
-      }
-});
->>>>>>> fc185f41ce82eecddea8e94c7089537a92d25f87
+//   form.addEventListener('submit', async e => {
+//
+//       e.preventDefault();
+//
+//       const email    = form.email.value.trim();
+//       const password = form.password.value;
+//       let url, body;
+//
+//       if (isLogin) {
+//           url  = '/api/v1/auth/authenticate';
+//           body= JSON.stringify({ email, password });
+//       } else {
+//           const username        = form.username.value.trim();
+//           const confirmPassword = form.confirmField.value;
+//           if (password !== confirmPassword) {
+//               return alert('Passwords do not match!');
+//           }
+//           url  = '/api/v1/auth/register';
+//           body = JSON.stringify({
+//               username: username,
+//               email: email,
+//               password: password});
+//
+//       }
+//
+//       try {
+//           const response = await fetch(url, {
+//               method: 'POST',
+//               headers: {
+//                   'Content-Type': 'application/json'
+//               },
+//               body
+//           });
+//           if (response.ok) {
+//               const data = await response.json();
+//               localStorage.setItem('token', data.token);
+//
+//               if(!isLogin) {
+//                   alert('Registration successful. Please log in.');
+//                   isLogin = true;
+//                   updateForm();
+//                   form.reset();
+//               }
+//               else{
+//                   window.location.href = '/dashboard';
+//               }
+//           }
+//           else{
+//               const text = await response.text();
+//               alert((isLogin ? 'Login' : 'Registration') + ' failed. ' + (text.length > 0 ? text : 'Please try again.'))
+//           }
+//       } catch (err) {
+//           console.error(err);
+//           alert('Something went wrong.');
+//       }
+// });
 })
