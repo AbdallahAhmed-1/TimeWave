@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       if (isLogin) {
           url  = '/api/v1/auth/authenticate';
-          JSON.stringify({ email, password });
+          body= JSON.stringify({ email, password });
       } else {
           const username        = form.username.value.trim();
           const confirmPassword = form.confirmPassword.value;
