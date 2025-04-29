@@ -56,60 +56,90 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    form.addEventListener('submit', async e => {
 
+    const errorMessage = document.getElementById('error-message');
+    // Form submission handler
+    form.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        const email    = form.email.value.trim();
-        const password = form.password.value;
-        let url, body;
+        // Validate passwords match for registration
+        if (!isLogin) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
 
-        if (isLogin) {
-            url  = '/api/v1/auth/authenticate';
-            JSON.stringify({ email, password });
-        } else {
-            const username        = form.username.value.trim();
-            const confirmPassword = form.confirmPassword.value;
             if (password !== confirmPassword) {
-                return alert('Passwords do not match!');
+                errorMessage.textContent = 'Passwords do not match!';
+                errorMessage.style.display = 'block';
+                return;
             }
-            url  = '/api/v1/auth/register';
-            body = JSON.stringify({
-                username: username,
-                email: email,
-                password: password});
-
         }
 
-        try {
-            const response = await fetch(url, {
+        // Get form data
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        if (isLogin) {
+            // Login request
+            fetch('/api/v1/auth/authenticate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body
-            });
-            if (response.ok) {
-                const data = await response.json();
-                localStorage.setItem('token', data.token);
-
-                if(!isLogin) {
-                    alert('Registration successful. Please log in.');
-                    isLogin = true;
-                    updateForm();
-                    form.reset();
-                }
-                else{
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then( text =>{
+                            console.error("Login response: ", text);
+                            throw new Error('Login failed' + text);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Store token in localStorage
+                    localStorage.setItem('token', data.token);
+                    // Redirect to dashboard
                     window.location.href = '/dashboard';
-                }
-            }
-            else{
-                const text = await response.text();
-                alert((isLogin ? 'Login' : 'Registration') + ' failed. ' + (text.length > 0 ? text : 'Please try again.'))
-            }
-        } catch (err) {
-            console.error(err);
-            alert('Something went wrong.');
+                })
+                .catch(error => {
+                    // Show error message
+                    errorMessage.textContent = 'Invalid email or password';
+                    errorMessage.style.display = 'block';
+                });
+        } else {
+            // Registration request
+            const username = document.getElementById('name').value;
+
+            fetch('/api/v1/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    email: email,
+                    password: password
+                })
+            })
+                .then(response => {
+                    if (response.ok) return response.json();
+                    throw new Error('Registration failed');
+                })
+                .then(data => {
+                    // Store token in localStorage
+                    localStorage.setItem('token', data.token);
+                    // Redirect to dashboard
+                    window.location.href = '/dashboard';
+                })
+                .catch(error => {
+                    // Show error message
+                    errorMessage.textContent = 'Registration failed. Email or username may already be in use.';
+                    errorMessage.style.display = 'block';
+                });
         }
-});
+    });
 })
