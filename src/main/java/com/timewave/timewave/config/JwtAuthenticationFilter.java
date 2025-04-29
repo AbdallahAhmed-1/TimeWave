@@ -38,6 +38,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // check the jwt token
         if (authHeader == null || !authHeader.startsWith("Bearer ")){
+
+            System.out.println("No JWT token or invalid header");
+
             filterChain.doFilter(request, response); // pass it to next filter
             return; // early return, since it's invalid
         }

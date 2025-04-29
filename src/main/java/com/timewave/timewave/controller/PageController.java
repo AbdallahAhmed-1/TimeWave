@@ -47,4 +47,5 @@ public class PageController {
         return "index";  // Still render index.html
     }
 
+
 }
