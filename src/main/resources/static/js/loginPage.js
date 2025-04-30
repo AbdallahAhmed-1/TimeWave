@@ -1,5 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+// Wrap fetch so that every request automatically includes the JWT if present
+    const _fetch = window.fetch;
+    window.fetch = (url, options = {}) => {
+        const token = localStorage.getItem('token');
+        options.headers = {
+            ...options.headers,
+            ...(token && { 'Authorization': 'Bearer ' + token })
+        };
+        return _fetch(url, options);
+    };
   const form       = document.querySelector('form#loginForm');
   const heading    = document.querySelector('h1');
   const submitBtn  = document.querySelector('button[type="submit"]');

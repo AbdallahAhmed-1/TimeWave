@@ -21,6 +21,11 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        return path.startsWith("/api/v1/auth");
+    }
 
     @Override
     protected void doFilterInternal(
@@ -39,6 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // check the jwt token
         if (authHeader == null || !authHeader.startsWith("Bearer")){
             filterChain.doFilter(request, response); // pass it to next filter
+            System.out.println("authheader: " + authHeader);
             return; // early return, since it's invalid
         }
 
