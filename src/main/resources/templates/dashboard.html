@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Your Memories</title>
@@ -24,13 +27,12 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div class="card p-3">
             <div class="d-flex">
-                <button class="btn btn-primary me-3">
-                    <img th:src="@{/dashboard/timeline-icon.png}" alt="Timeline" class="btn-icon"/>
-                </button>
+                
                 <button class="btn btn-primary me-3">
                     <img th:src="@{/dashboard/calendar-icon.png}" alt="Calendar" class="btn-icon"/>
                 </button>
-                <button class="btn btn-primary me-3">
+                <!-- Map (move the id here) -->
+                <button class="btn btn-primary me-3" id="mapTab">
                     <img th:src="@{/dashboard/map-icon.png}" alt="Map" class="btn-icon"/>
                 </button>
                 <button class="btn btn-primary me-3">
@@ -47,6 +49,7 @@
         <textarea rows="7" cols="60" class="form-control border-0"
                   placeholder="Interactive timeline visualization"></textarea>
     </div>
+    <div id="map" style="height: 500px; display: none; margin-top: 20px;"></div>
 
     <div class="row">
         <!-- Recent Memories -->
