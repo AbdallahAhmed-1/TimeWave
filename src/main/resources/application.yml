@@ -1,14 +1,15 @@
 spring:
-
   application:
     name: TimeWeave1
+
   datasource:
     url: jdbc:mysql://localhost:3306/timeweave_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: tw_user
-    password: YourStrongP@ss
+    username: timeweave
+    password: Pa$$w0rd
+
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create-drop  # Change this to 'update' or 'none' in production
     show-sql: true
     properties:
       hibernate:
@@ -16,11 +17,27 @@ spring:
     database: mysql
     database-platform: org.hibernate.dialect.MySQLDialect
 
-
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
     cache: false
-    check-template: true  # Validate that templates exist
-    check-template-location: true  # Validate template location
-    enabled: true  # Enable Thymeleaf view rendering
+    check-template: true
+    check-template-location: true
+    enabled: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: Abdallahi971222@gmail.com
+    password: kdhpuwqarzfcumfp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  web:
+    resources:
+      static-locations:
+        - classpath:/static/
+        - file:uploads/

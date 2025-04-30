@@ -1,14 +1,16 @@
 package com.timewave.timewave.controller;
 
 import com.timewave.timewave.model.Memory;
-
+import com.timewave.timewave.model.User;
 import com.timewave.timewave.repository.MemoryRepository;
 import com.timewave.timewave.repository.UserRepository;
+import com.timewave.timewave.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.web.bind.annotation.*;
-
-
+import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
+import org.springframework.security.core.context.SecurityContextHolder;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/memories")
@@ -21,28 +23,51 @@ public class MemoryController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private FileService fileService;
+
     // Create a memory
     @PostMapping
-    public Memory createMemory(@RequestBody Memory memory) {
+    public Memory createMemory(@RequestParam String title,
+                               @RequestParam String location,
+                               @RequestParam String type,
+                               @RequestParam(required = false) String content,
+                               @RequestParam(required = false) MultipartFile photo) {
+
         // Get the current authenticated user
-        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //String email = authentication.getName(); // Assuming email is stored as the username
+        String email = SecurityContextHolder.getContext().getAuthentication().getName(); // Get email from security context
+        System.out.println("Authenticated email from SecurityContext: " + email);
+        Optional<User> userOpt = userRepository.findByEmail(email);
 
-        // Find the user by email
-       // Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
 
-        //if (userOpt.isPresent()) {
-       //     User user = userOpt.get();
-       //     memory.setUser(user); // Associate memory with the authenticated user
-            return memoryRepository.save(memory);
-       // } else {
-      //      throw new RuntimeException("User not found");
+            // Create a new memory instance
+            Memory memory = new Memory();
+            memory.setTitle(title);
+            memory.setLocation(location);
+            memory.setType(type);
+            memory.setUser(user);  // Associate the memory with the user
+
+            // If type is text, store content
+            if ("text".equals(type)) {
+                memory.setContent(content);
+            }
+            // If type is photo and a photo was uploaded, save it
+            else if ("photo".equals(type) && photo != null) {
+                String photoPath = fileService.savePhoto(photo); // Save photo and get its path
+                memory.setContent(photoPath);  // Store the path to the photo
+            }
+
+            return memoryRepository.save(memory); // Save the memory in the database
+        } else {
+            throw new RuntimeException("User not found");
         }
     }
 
-    // Get all memories
-    //@GetMapping
-   // public List<Memory> getAllMemories() {
-   //     return memoryRepository.findAll();
-    //}
-//}
+    // Get all memories (optional, for testing purposes)
+    @GetMapping
+    public List<Memory> getAllMemories() {
+        return memoryRepository.findAll();
+    }
+}

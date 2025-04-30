@@ -111,8 +111,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
             })
                 .then(response => {
-                    if (response.ok) return response.json();
-                    throw new Error('Login failed');
+                    if (!response.ok) {
+                        return response.text().then( text =>{
+                            console.error("Login reponse: ", text);
+                            throw new Error('Login failed' + text);
+                        });
+                    }
+                    return response.json();
                 })
                 .then(data => {
                     // Store token in localStorage

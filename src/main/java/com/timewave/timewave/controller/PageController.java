@@ -19,22 +19,22 @@ public class PageController {
         return "login";  // This will resolve to src/main/resources/templates/login.html
     }
 
-//    // Handle the login form submission
-//    @PostMapping("/login")
-//    public String loginSubmit(@RequestParam String email, @RequestParam String password) {
-//        // Authenticate the user (example check)
-//        if ("admin@example.com".equals(email) && "password123".equals(password)) {
-//            return "redirect:/home";  // Redirect to home if successful
-//        }
-//        return "redirect:/login?error";  // Redirect back to login page with error
-//    }
+    // Handle the login form submission
+    @PostMapping("/login")
+    public String loginSubmit(@RequestParam String email, @RequestParam String password) {
+        // Authenticate the user (example check)
+        if ("admin@example.com".equals(email) && "password123".equals(password)) {
+            return "redirect:/home";  // Redirect to home if successful
+        }
+        return "redirect:/login?error";  // Redirect back to login page with error
+    }
 
     @GetMapping({"/", "/home"})
     public String homePage(Model model) {
         // Dummy memories
         List<Memory> memories = Arrays.asList(
-                new Memory("Trip to Paris", "Saw the Eiffel Tower", "2023-04-20", "Paris", "relax"),
-                new Memory("Beach day", "Relaxed by the sea", "2024-07-15", "Barcelona", "anxious")
+                new Memory("Trip to Paris", "Saw the Eiffel Tower", "2023-04-20", "Paris", "relax", "content", "image"),
+                new Memory("Beach day", "Relaxed by the sea", "2024-07-15", "Barcelona", "anxious", "content", "image")
         );
 
         // Dummy "On This Day"
@@ -46,5 +46,6 @@ public class PageController {
 
         return "index";  // Still render index.html
     }
+
 
 }

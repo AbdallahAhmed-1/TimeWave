@@ -1,58 +1,92 @@
-// dashboard.js
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function () {
+    const newEntryBtn = document.getElementById("new-entry");
+    const entryModal = new bootstrap.Modal(document.getElementById("entryModal"));
+    const entryType = document.getElementById("entryType");
+    const textInput = document.getElementById("textInput");
+    const photoInput = document.getElementById("photoInput");
+    const entryForm = document.getElementById("entryForm");
 
-    // ... (Previous code for view switching and new entry button)
-
-    // Function to fetch and display memories (replace with your actual API endpoint)
-    async function fetchMemories(view, filter = {}) { // Added filter parameter
-        try {
-            const response = await fetch(`/api/memories?view=${view}`, { // Use template literals for dynamic URL
-                method: 'POST', // Use POST for filters
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(filter) // Send filters in request body
-            });
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-
-            // Update the display with the retrieved memories (Implementation depends on your HTML structure)
-            displayMemories(data);
-        } catch (error) {
-            console.error('Error fetching memories:', error);
-            // Display error message to the user
-        }
-    }
-
-
-
-
-    // Helper function to display memories (you'll need to customize this)
-    function displayMemories(memories) {
-        // Your display logic here, possibly rendering in a table
-        console.log(memories)
-    }
-
-
-    // Initial fetch and display of memories
-    fetchMemories('timeline'); // Default view
-
-    // ... Event listeners for view switching buttons (similar to before, but now call fetchMemories with the appropriate view)
-
-    // Add click event listeners to each button
-    viewButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Get the URL from the data-url attribute
-            const view = this.dataset.view;
-
-            //Fetch the data from the correct endpoint
-            fetchMemories(view);
-
-        });
-
+    // Show modal when clicking "+ New Entry"
+    newEntryBtn.addEventListener("click", () => {
+        entryModal.show();
     });
 
-    // ... (Code for "New Entry" button and other features)
+    // Toggle input fields based on selected type
+    entryType.addEventListener("change", () => {
+        const type = entryType.value;
+        textInput.style.display = type === "text" ? "block" : "none";
+        photoInput.style.display = type === "photo" ? "block" : "none";
+    });
+
+    // Handle form submission
+    entryForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const type = entryType.value;
+        const title = document.getElementById("entryTitle").value;
+        const text = document.getElementById("entryText").value;
+        const photo = document.getElementById("entryPhoto").files[0];
+        const location = document.getElementById("entryLocation").value;
+
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("location", location);
+        formData.append("type", type);
+
+        if (type === "text") {
+            formData.append("content", text);
+        } else if (type === "photo" && photo) {
+            formData.append("photo", photo);
+        }
+
+        // Sending POST request to create a memory
+        // fetch("/api/memories", {
+        //     method: "POST",
+        //     body: formData,
+        // })
+        //     .then((res) => {
+        //         if (!res.ok) {
+        //             return res.text().then(text => {
+        //                 throw new Error(`Server error (${res.status}): ${text}`);
+        //             });
+        //         }
+        //         return res.json();
+        //     })
+        //     .then((data) => {
+        //         alert("Memory saved successfully!");
+        //         entryModal.hide();
+        //         entryForm.reset();
+        //         textInput.style.display = "none";
+        //         photoInput.style.display = "none";
+        //         appendMemoryToRecent(data);
+        //     })
+        //     .catch((err) => {
+        //         console.error("Detailed error:", err.message);
+        //         alert("Error saving memory: " + err.message);
+        //     });
+
+    });
 });
+
+// Function to append the newly created memory to the "Recent Memories" section
+function appendMemoryToRecent(memory) {
+    const container = document.getElementById("mini-cards");
+    const div = document.createElement("div");
+
+    let contentHtml = '';
+    if (memory.type === "text") {
+        contentHtml = `<p>${memory.content}</p>`;
+    } else if (memory.type === "photo") {
+        contentHtml = `<img src="/uploads/${memory.content}" alt="${memory.title}" class="img-thumbnail" style="max-width: 100%; height: auto;">`;
+    }
+
+    div.innerHTML = `
+        <h6>${memory.title}</h6>
+        ${contentHtml}
+        <small>${memory.date} | ${memory.location}</small>
+        <hr/>
+    `;
+
+    container.prepend(div);
+}
+
