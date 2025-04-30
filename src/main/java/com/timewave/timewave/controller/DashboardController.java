@@ -17,15 +17,15 @@ import java.util.List;
 
 @Controller
 public class DashboardController {
-//
-//    private final UserRepository userRepository;
-//    private final MemoryRepository memoryRepository;
-//
-//    public DashboardController(UserRepository userRepository,
-//                               MemoryRepository memoryRepository, UserDetailsService userDetailsService) {
-//        this.userRepository = userRepository;
-//        this.memoryRepository = memoryRepository;
-//    }
+
+    private final UserRepository userRepository;
+    private final MemoryRepository memoryRepository;
+
+    public DashboardController(UserRepository userRepository,
+                               MemoryRepository memoryRepository, UserDetailsService userDetailsService) {
+        this.userRepository = userRepository;
+        this.memoryRepository = memoryRepository;
+    }
 
     @GetMapping("/dashboard")
     public String dashboard(Authentication authentication, Model model) {
@@ -33,7 +33,6 @@ public class DashboardController {
 //        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 //        String email = userDetails.getUsername();
 //        User user = userRepository.findByEmail(email) .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-////
 ////        // Fetch that user's memories
 //        List<Memory> memories = memoryRepository.findByUserId(user.getId());
 ////
@@ -43,8 +42,8 @@ public class DashboardController {
 //        // Add attributes to the model for Thymeleaf
 //        model.addAttribute("user", user);
 //        model.addAttribute("onThisDay", onThisDay);
-//
-        // Render src/main/resources/templates/dashboard.html
+
+         //Render src/main/resources/templates/dashboard.html
         return "dashboard";
     }
 }

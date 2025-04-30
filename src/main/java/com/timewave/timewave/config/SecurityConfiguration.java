@@ -23,10 +23,10 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                // whitelist
+                  // whitelist
                 .authorizeHttpRequests((
                         authorizeHttpRequests) -> authorizeHttpRequests
-                        .requestMatchers("/api/v1/auth/**", "/", "/home", "/login", "/images/**", "/css/**", "/js/**", "/dashboard")
+                        .requestMatchers("/api/v1/auth/**", "/", "/images/**", "/css/**", "/js/**","/home", "/login", "/dashboard/**", "/dashboard", "/api/memories", "/api/newsletter/subscribe")
                         .permitAll()
                         .anyRequest()
                         .authenticated()
@@ -37,7 +37,8 @@ public class SecurityConfiguration {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
 
-
         return http.build();
+
+
     }
 }
