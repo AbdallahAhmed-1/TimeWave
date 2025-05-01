@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     audioPreview.src = audioUrl;
                     audioPreview.style.display = "block";
                     // Store the blob for later upload
-                    audioPreview.dataset.blob = blob;
+                    audioPreview.audioBlob = blob;
                 };
                 mediaRecorder.start();
                 recordBtn.textContent = "🛑 Stop Recording";
@@ -99,8 +99,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Append recorded audio if available
-        if (audioPreview.dataset.blob) {
-            const audioFile = new File([audioPreview.dataset.blob], "recording.webm", { type: "audio/webm" });
+        if (audioPreview.audioBlob) {
+            const audioFile = new File([audioPreview.audioBlob], "recording.webm", { type: "audio/webm" });
             formData.append("audio", audioFile);
         }
 
