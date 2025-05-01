@@ -1,10 +1,37 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        window.location.href = "/login";
+        return;
+    }
+
     const newEntryBtn = document.getElementById("new-entry");
     const entryModal = new bootstrap.Modal(document.getElementById("entryModal"));
     const entryType = document.getElementById("entryType");
     const textInput = document.getElementById("textInput");
     const photoInput = document.getElementById("photoInput");
     const entryForm = document.getElementById("entryForm");
+
+    // Load existing memories
+    fetch("/api/memories", {
+        headers: {
+            "Authorization": "Bearer " + token
+        },
+        method: "GET",
+        credentials: "include"
+    })
+        .then(res => {
+            if (!res.ok) throw new Error("Failed to fetch memories");
+            return res.json();
+        })
+        .then(data => {
+            data.forEach(appendMemoryToRecent);
+        })
+        .catch(err => {
+            console.error("Error loading memories:", err.message);
+            alert("Session expired. Please log in again.");
+            window.location.href = "/login";
+        });
 
     // Show modal when clicking "+ New Entry"
     newEntryBtn.addEventListener("click", () => {
@@ -39,36 +66,36 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("photo", photo);
         }
 
-        // Sending POST request to create a memory
-        // fetch("/api/memories", {
-        //     method: "POST",
-        //     body: formData,
-        // })
-        //     .then((res) => {
-        //         if (!res.ok) {
-        //             return res.text().then(text => {
-        //                 throw new Error(`Server error (${res.status}): ${text}`);
-        //             });
-        //         }
-        //         return res.json();
-        //     })
-        //     .then((data) => {
-        //         alert("Memory saved successfully!");
-        //         entryModal.hide();
-        //         entryForm.reset();
-        //         textInput.style.display = "none";
-        //         photoInput.style.display = "none";
-        //         appendMemoryToRecent(data);
-        //     })
-        //     .catch((err) => {
-        //         console.error("Detailed error:", err.message);
-        //         alert("Error saving memory: " + err.message);
-        //     });
-
+        fetch("/api/memories", {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            body: formData,
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    return res.text().then(text => {
+                        throw new Error(`Server error (${res.status}): ${text}`);
+                    });
+                }
+                return res.json();
+            })
+            .then((data) => {
+                alert("Memory saved successfully!");
+                entryModal.hide();
+                entryForm.reset();
+                textInput.style.display = "none";
+                photoInput.style.display = "none";
+                appendMemoryToRecent(data);
+            })
+            .catch((err) => {
+                console.error("Detailed error:", err.message);
+                alert("Error saving memory: " + err.message);
+            });
     });
 });
 
-// Function to append the newly created memory to the "Recent Memories" section
 function appendMemoryToRecent(memory) {
     const container = document.getElementById("mini-cards");
     const div = document.createElement("div");
@@ -89,4 +116,3 @@ function appendMemoryToRecent(memory) {
 
     container.prepend(div);
 }
-
