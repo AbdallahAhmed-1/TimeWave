@@ -28,23 +28,24 @@ public class DashboardController {
     }
 
     @GetMapping("/dashboard")
-    public String dashboard(Authentication authentication, Model model) {
+    public String dashboard(Principal principal, Model model) {
 //        // Fetch the logged-in user
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String email = userDetails.getUsername();
-        User user = userRepository.findByEmail(email) .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-//
-//        // Fetch that user's memories
-        List<Memory> memories = memoryRepository.findByUserId(user.getId());
-//
-        // Example "On This Day" text – replace with your own logic/service call
-        String onThisDay = "Nothing special today…";
+        String email = principal.getName();
+        User user = userRepository.findByEmail(principal.getName()).orElseThrow();
+        List<Memory> memories = memoryRepository.findByUserEmail(email);
 
-        // Add attributes to the model for Thymeleaf
-        model.addAttribute("user", user);
-        model.addAttribute("onThisDay", onThisDay);
+//        User user = userRepository.findByEmail(email) .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+////        // Fetch that user's memories
+//        List<Memory> memories = memoryRepository.findByUserId(user.getId());
+////
+//        // Example "On This Day" text – replace with your own logic/service call
+//        String onThisDay = "Nothing special today…";
+//
+//        // Add attributes to the model for Thymeleaf
+        model.addAttribute("memories", memories);
 
-        // Render src/main/resources/templates/dashboard.html
+
+         //Render src/main/resources/templates/dashboard.html
         return "dashboard";
     }
 }

@@ -13,25 +13,28 @@
             crossorigin="anonymous"/>
 
     <!-- Your custom styles -->
-    <link rel="stylesheet" th:href="@{/static/css/styleDash.css}"/>
+    <link rel="stylesheet" th:href="@{/css/styleDash.css}"/>
 </head>
 <body>
+
 <div class="container mt-4">
     <!-- Top buttons -->
+    <h3 id="welcome" class="mb-4"></h3>
+
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div class="card p-3">
             <div class="d-flex">
                 <button class="btn btn-primary me-3">
-                    <img th:src="@{/static/dashboard/timeline-icon.png}" alt="Timeline" class="btn-icon"/>
+                    <img th:src="@{/dashboard/timeline-icon.png}" alt="Timeline" class="btn-icon"/>
                 </button>
                 <button class="btn btn-primary me-3">
-                    <img th:src="@{/static/dashboard/calendar-icon.png}" alt="Calendar" class="btn-icon"/>
+                    <img th:src="@{/dashboard/calendar-icon.png}" alt="Calendar" class="btn-icon"/>
                 </button>
                 <button class="btn btn-primary me-3">
-                    <img th:src="@{/static/dashboard/map-icon.png}" alt="Map" class="btn-icon"/>
+                    <img th:src="@{/dashboard/map-icon.png}" alt="Map" class="btn-icon"/>
                 </button>
                 <button class="btn btn-primary me-3">
-                    <img th:src="@{/static/dashboard/insights-icon.png}" alt="Insights" class="btn-icon"/>
+                    <img th:src="@{/dashboard/insights-icon.png}" alt="Insights" class="btn-icon"/>
                 </button>
             </div>
         </div>
@@ -73,8 +76,51 @@
         </div>
     </div>
 </div>
+<!-- New Entry Modal -->
+<div class="modal fade" id="entryModal" tabindex="-1" aria-labelledby="entryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="entryForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="entryModalLabel">New Memory</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="entryType" class="form-label">Type</label>
+                        <select class="form-select" id="entryType" required>
+                            <option value="">Choose...</option>
+                            <option value="text">Text</option>
+                            <option value="photo">Photo</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="entryTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="entryTitle" required />
+                    </div>
+                    <div class="mb-3" id="textInput" style="display: none;">
+                        <label for="entryText" class="form-label">Memory Text</label>
+                        <textarea class="form-control" id="entryText" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3" id="photoInput" style="display: none;">
+                        <label for="entryPhoto" class="form-label">Upload Photo</label>
+                        <input type="file" class="form-control" id="entryPhoto" accept="image/*" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="entryLocation" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="entryLocation" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save Memory</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-<script th:src="@{/static/js/dashboard.js}"></script>
+
+<script th:src="@{/js/dashboard.js}"></script>
 <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
