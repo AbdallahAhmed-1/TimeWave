@@ -138,27 +138,41 @@ document.addEventListener("DOMContentLoaded", function () {
     function appendMemoryToRecent(memory) {
         const container = document.getElementById("mini-cards");
         const div = document.createElement("div");
+        div.className = "memory-card";
 
-        let contentHtml = `<p>${memory.description || ''}</p>`;
+        let contentHtml = `
+            <div class="memory-content">
+                <h6 class="memory-title">${memory.title}</h6>
+                <p class="memory-text">${memory.description || ''}</p>`;
 
         if (Array.isArray(memory.attachments)) {
+            contentHtml += '<div class="memory-attachments">';
             memory.attachments.forEach(att => {
                 if (att.mimeType.startsWith("image/")) {
-                    contentHtml += `<img src="${att.filePath}" alt="${memory.title}" class="img-thumbnail" style="max-width: 100%; height: auto;">`;
+                    contentHtml += `
+                        <img src="${att.filePath}" 
+                             alt="${memory.title}" 
+                             class="img-fluid rounded"
+                             style="max-width: 100%; height: auto;">`;
                 } else if (att.mimeType.startsWith("audio/")) {
-                    contentHtml += `<audio controls src="${att.filePath}"></audio>`;
+                    contentHtml += `
+                        <audio controls class="w-100">
+                            <source src="${att.filePath}" type="${att.mimeType}">
+                            Your browser does not support the audio element.
+                        </audio>`;
                 }
-                // Add more types as needed
             });
+            contentHtml += '</div>';
         }
 
-        div.innerHTML = `
-        <h6>${memory.title}</h6>
-        ${contentHtml}
-        <small>${memory.location || ''}</small>
-        <hr/>
-    `;
+        contentHtml += `
+            <div class="memory-meta">
+                <span><i class="fas fa-calendar"></i> ${memory.date || ''}</span>
+                <span><i class="fas fa-map-marker-alt"></i> ${memory.location || ''}</span>
+            </div>
+        </div>`;
 
+        div.innerHTML = contentHtml;
         container.prepend(div);
     }
 
@@ -204,5 +218,111 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     } else {
         console.warn("Map button with id 'mapTab' not found.");
+    }
+
+    // Color Customization
+    const customizeBtn = document.getElementById('customizeBtn');
+    const customizeModal = new bootstrap.Modal(document.getElementById('customizeModal'));
+    const colorThemes = document.querySelectorAll('.color-theme');
+    const primaryColorInput = document.getElementById('primaryColor');
+    const secondaryColorInput = document.getElementById('secondaryColor');
+    const saveThemeBtn = document.getElementById('saveTheme');
+
+    // Load saved theme from localStorage
+    const savedTheme = localStorage.getItem('dashboardTheme');
+    if (savedTheme) {
+        applyTheme(JSON.parse(savedTheme));
+    }
+
+    customizeBtn.addEventListener('click', () => {
+        customizeModal.show();
+    });
+
+    // Handle theme selection
+    colorThemes.forEach(theme => {
+        theme.addEventListener('click', () => {
+            // Remove active class from all themes
+            colorThemes.forEach(t => t.classList.remove('active'));
+            // Add active class to selected theme
+            theme.classList.add('active');
+            
+            const themeName = theme.dataset.theme;
+            const themeColors = getThemeColors(themeName);
+            
+            // Update color inputs
+            primaryColorInput.value = themeColors.primary;
+            secondaryColorInput.value = themeColors.secondary;
+        });
+    });
+
+    // Handle custom color inputs
+    [primaryColorInput, secondaryColorInput].forEach(input => {
+        input.addEventListener('input', () => {
+            // Remove active class from preset themes when custom colors are used
+            colorThemes.forEach(theme => theme.classList.remove('active'));
+        });
+    });
+
+    // Save theme changes
+    saveThemeBtn.addEventListener('click', () => {
+        const theme = {
+            primary: primaryColorInput.value,
+            secondary: secondaryColorInput.value
+        };
+        
+        // Save to localStorage
+        localStorage.setItem('dashboardTheme', JSON.stringify(theme));
+        
+        // Apply the theme
+        applyTheme(theme);
+        
+        // Close modal
+        customizeModal.hide();
+    });
+
+    function getThemeColors(themeName) {
+        const themes = {
+            default: { primary: '#3498db', secondary: '#2ecc71' },
+            sunset: { primary: '#e74c3c', secondary: '#f39c12' },
+            ocean: { primary: '#1abc9c', secondary: '#3498db' },
+            lavender: { primary: '#9b59b6', secondary: '#8e44ad' },
+            forest: { primary: '#27ae60', secondary: '#2ecc71' }
+        };
+        return themes[themeName] || themes.default;
+    }
+
+    function applyTheme(theme) {
+        const root = document.documentElement;
+        
+        // Update CSS variables
+        root.style.setProperty('--primary-color', theme.primary);
+        root.style.setProperty('--secondary-color', theme.secondary);
+        
+        // Update button colors
+        document.querySelectorAll('.btn-primary').forEach(btn => {
+            btn.style.backgroundColor = theme.primary;
+            btn.style.borderColor = theme.primary;
+        });
+        
+        // Update form focus states
+        const styleSheet = document.styleSheets[0];
+        const focusRule = `:focus { border-color: ${theme.primary} !important; box-shadow: 0 0 0 0.2rem ${theme.primary}40 !important; }`;
+        
+        // Remove existing focus rule if it exists
+        for (let i = 0; i < styleSheet.cssRules.length; i++) {
+            if (styleSheet.cssRules[i].selectorText === ':focus') {
+                styleSheet.deleteRule(i);
+                break;
+            }
+        }
+        
+        // Add new focus rule
+        styleSheet.insertRule(focusRule, styleSheet.cssRules.length);
+        
+        // Update active theme preview
+        const activeTheme = document.querySelector('.color-theme.active');
+        if (activeTheme) {
+            activeTheme.querySelector('.theme-preview').style.borderColor = theme.primary;
+        }
     }
 });

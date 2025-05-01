@@ -11,51 +11,211 @@
             rel="stylesheet"
             crossorigin="anonymous"/>
 
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+
     <!-- Your custom styles -->
     <link rel="stylesheet" th:href="@{/css/styleDash.css}"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        .memory-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        .memory-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .memory-content {
+            padding: 1.5rem;
+        }
+        .memory-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+        .memory-text {
+            color: #34495e;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            word-wrap: break-word;
+        }
+        .memory-meta {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .memory-meta i {
+            margin-right: 0.25rem;
+        }
+        .memory-attachments {
+            margin-top: 1rem;
+        }
+        .memory-attachments img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+        .memory-attachments audio {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        .btn-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 0.5rem;
+        }
+        .nav-buttons {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .nav-buttons .btn {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .nav-buttons .btn:hover {
+            transform: translateY(-1px);
+        }
+        .form-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .form-card h5 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 0.75rem;
+            border: 1px solid #e0e0e0;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+        .color-theme {
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .color-theme:hover {
+            transform: scale(1.05);
+        }
+        
+        .theme-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .color-theme.active .theme-preview {
+            border: 2px solid #3498db;
+        }
+        
+        .color-theme span {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .form-control-color {
+            width: 100%;
+            height: 38px;
+            padding: 0.375rem;
+        }
+        
+        /* Theme-specific styles */
+        [data-theme="default"] {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+        }
+        
+        [data-theme="sunset"] {
+            --primary-color: #e74c3c;
+            --secondary-color: #f39c12;
+        }
+        
+        [data-theme="ocean"] {
+            --primary-color: #1abc9c;
+            --secondary-color: #3498db;
+        }
+        
+        [data-theme="lavender"] {
+            --primary-color: #9b59b6;
+            --secondary-color: #8e44ad;
+        }
+        
+        [data-theme="forest"] {
+            --primary-color: #27ae60;
+            --secondary-color: #2ecc71;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-light">
 
 <div class="container mt-4">
-    <!-- Top buttons -->
-    <h3 id="welcome" class="mb-4"></h3>
+    <!-- Welcome Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 id="welcome" class="mb-0">Welcome to Your Memory Journal</h3>
+    </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="card p-3">
-            <div class="d-flex">
-                <button class="btn btn-primary me-3">
-                    <img th:src="@{/dashboard/timeline-icon.png}" alt="Timeline" class="btn-icon"/>
-                </button>
-                <button class="btn btn-primary me-3">
-                    <img th:src="@{/dashboard/calendar-icon.png}" alt="Calendar" class="btn-icon"/>
-                </button>
-                <button class="btn btn-primary me-3" id="mapTab">
-                    <img th:src="@{/dashboard/map-icon.png}" alt="Map" class="btn-icon"/>
-                </button>
-                <button class="btn btn-primary me-3">
-                    <img th:src="@{/dashboard/insights-icon.png}" alt="Insights" class="btn-icon"/>
-                </button>
-                <button class="btn btn-outline-danger" id="logoutBtn">Log Out</button>
-            </div>
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+        <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-primary">
+                <i class="fas fa-history"></i> Timeline
+            </button>
+            <button class="btn btn-primary">
+                <i class="fas fa-calendar"></i> Calendar
+            </button>
+            <button class="btn btn-primary" id="mapTab">
+                <i class="fas fa-map-marker-alt"></i> Map
+            </button>
+            <button class="btn btn-primary" id="customizeBtn">
+                <i class="fas fa-palette"></i> Customize
+            </button>
+            <button class="btn btn-outline-danger ms-auto" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Log Out
+            </button>
         </div>
     </div>
 
     <!-- New Memory Form -->
-    <div class="card p-4 mb-4">
-        <h5><strong>Create a New Memory</strong></h5>
+    <div class="form-card">
+        <h5><i class="fas fa-plus-circle me-2"></i>Create a New Memory</h5>
         <form id="entryForm">
-            <div class="mb-3">
-                <label for="entryType" class="form-label">Type</label>
-                <select class="form-select" id="entryType" required>
-                    <option value="">Choose...</option>
-                    <option value="text">Text</option>
-                    <option value="photo">Photo</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="entryTitle" class="form-label">Title</label>
-                <input type="text" class="form-control" id="entryTitle" required />
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="entryType" class="form-label">Type</label>
+                    <select class="form-select" id="entryType" required>
+                        <option value="">Choose...</option>
+                        <option value="text">Text</option>
+                        <option value="photo">Photo</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="entryTitle" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="entryTitle" required />
+                </div>
             </div>
             <div class="mb-3" id="textInput" style="display: none;">
                 <label for="entryText" class="form-label">Memory Text</label>
@@ -67,47 +227,59 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">Record Audio</label><br/>
-                <button type="button" class="btn btn-secondary" id="recordAudioBtn">🎙️ Record Audio</button>
-                <audio id="audioPreview" controls style="display: none; margin-top: 10px;"></audio>
+                <button type="button" class="btn btn-secondary" id="recordAudioBtn">
+                    <i class="fas fa-microphone"></i> Record Audio
+                </button>
+                <audio id="audioPreview" controls style="display: none; margin-top: 10px;" class="w-100"></audio>
             </div>
             <div class="mb-3">
                 <label for="entryLocation" class="form-label">Location</label>
                 <input type="text" class="form-control" id="entryLocation" />
             </div>
-            <button type="submit" class="btn btn-primary">Save Memory</button>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-2"></i>Save Memory
+            </button>
         </form>
     </div>
 
     <div class="row">
         <!-- Recent Memories -->
         <div class="col-md-8">
-            <h5 class="mb-3"><strong>Recent Memories</strong></h5>
-            <div class="card p-lg-5 mb-3" id="mini-cards">
-                <div th:each="m : ${memories}">
-                    <h6 th:text="${m.title}">Title</h6>
-                    <p th:text="${m.description}">Description</p>
-                    <small th:text="${m.date} + ' | ' + m.location">Date | Location</small>
-                    <hr/>
+            <h5 class="mb-3"><i class="fas fa-clock me-2"></i>Recent Memories</h5>
+            <div id="mini-cards">
+                <div th:each="m : ${memories}" class="memory-card">
+                    <div class="memory-content">
+                        <h6 class="memory-title" th:text="${m.title}">Title</h6>
+                        <p class="memory-text" th:text="${m.description}">Description</p>
+                        <div class="memory-meta">
+                            <span><i class="fas fa-calendar"></i> <span th:text="${m.date}">Date</span></span>
+                            <span><i class="fas fa-map-marker-alt"></i> <span th:text="${m.location}">Location</span></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- On This Day & Mood Trends -->
+        <!-- Sidebar -->
         <div class="col-md-4">
-            <div class="card mb-3 p-3" id="mini-cards">
-                <h5 class="mb-3"><strong>On This Day</strong></h5>
-                <p th:text="${onThisDay}">On this day facts...</p>
+            <div class="memory-card">
+                <div class="memory-content">
+                    <h5 class="memory-title"><i class="fas fa-calendar-day me-2"></i>On This Day</h5>
+                    <p class="memory-text" th:text="${onThisDay}">On this day facts...</p>
+                </div>
             </div>
-            <div class="card mb-3 p-3" id="mini-cards">
-                <h5 class="mb-3"><strong>Mood Trends</strong></h5>
-                <p>Chart goes here</p>
+            <div class="memory-card">
+                <div class="memory-content">
+                    <h5 class="memory-title"><i class="fas fa-chart-line me-2"></i>Mood Trends</h5>
+                    <p class="memory-text">Chart goes here</p>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Map Section -->
-<div id="map" style="height: 500px; display: none; margin-top: 20px;"></div>
+<div id="map" style="height: 500px; display: none; margin-top: 20px; border-radius: 12px; overflow: hidden;"></div>
 
 <!-- Scripts -->
 <script th:src="@{/js/dashboard.js}"></script>
@@ -115,5 +287,63 @@
 <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
+
+<!-- Customization Modal -->
+<div class="modal fade" id="customizeModal" tabindex="-1" aria-labelledby="customizeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customizeModalLabel">
+                    <i class="fas fa-palette me-2"></i>Customize Your Dashboard
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-4">
+                    <h6 class="mb-3">Choose Your Color Theme</h6>
+                    <div class="color-themes d-flex flex-wrap gap-2">
+                        <div class="color-theme" data-theme="default">
+                            <div class="theme-preview" style="background: linear-gradient(45deg, #3498db, #2ecc71);"></div>
+                            <span>Default</span>
+                        </div>
+                        <div class="color-theme" data-theme="sunset">
+                            <div class="theme-preview" style="background: linear-gradient(45deg, #e74c3c, #f39c12);"></div>
+                            <span>Sunset</span>
+                        </div>
+                        <div class="color-theme" data-theme="ocean">
+                            <div class="theme-preview" style="background: linear-gradient(45deg, #1abc9c, #3498db);"></div>
+                            <span>Ocean</span>
+                        </div>
+                        <div class="color-theme" data-theme="lavender">
+                            <div class="theme-preview" style="background: linear-gradient(45deg, #9b59b6, #8e44ad);"></div>
+                            <span>Lavender</span>
+                        </div>
+                        <div class="color-theme" data-theme="forest">
+                            <div class="theme-preview" style="background: linear-gradient(45deg, #27ae60, #2ecc71);"></div>
+                            <span>Forest</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <h6 class="mb-3">Custom Colors</h6>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label">Primary Color</label>
+                            <input type="color" class="form-control form-control-color" id="primaryColor" value="#3498db">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Secondary Color</label>
+                            <input type="color" class="form-control form-control-color" id="secondaryColor" value="#2ecc71">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveTheme">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
