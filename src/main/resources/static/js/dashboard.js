@@ -228,47 +228,315 @@ document.addEventListener("DOMContentLoaded", function () {
     const secondaryColorInput = document.getElementById('secondaryColor');
     const saveThemeBtn = document.getElementById('saveTheme');
 
-    // Load saved theme from localStorage
-    const savedTheme = localStorage.getItem('dashboardTheme');
-    if (savedTheme) {
-        applyTheme(JSON.parse(savedTheme));
+    // Store custom colors separately
+    let customColors = {
+        primary: '#3498db',
+        secondary: '#2ecc71',
+        cardBg: '#ffffff',
+        bodyBg: '#f8f9fa',
+        textPrimary: '#2c3e50',
+        textSecondary: '#34495e',
+        borderColor: '#e0e0e0'
+    };
+
+    // Load saved custom colors from localStorage
+    const savedCustomColors = localStorage.getItem('customColors');
+    if (savedCustomColors) {
+        customColors = JSON.parse(savedCustomColors);
+        // Update color inputs with saved custom colors
+        primaryColorInput.value = customColors.primary;
+        secondaryColorInput.value = customColors.secondary;
+        updateColorPreviews();
+        updateCustomThemePreview(customColors.primary, customColors.secondary);
     }
 
-    customizeBtn.addEventListener('click', () => {
-        customizeModal.show();
-    });
+    function getThemeColors(themeName) {
+        const themes = {
+            default: {
+                primary: '#3498db',
+                secondary: '#2ecc71',
+                cardBg: '#ffffff',
+                bodyBg: '#f8f9fa',
+                textPrimary: '#2c3e50',
+                textSecondary: '#34495e',
+                borderColor: '#e0e0e0'
+            },
+            sunset: {
+                primary: '#e74c3c',
+                secondary: '#f39c12',
+                cardBg: '#fff5f5',
+                bodyBg: '#fff0f0',
+                textPrimary: '#2c1810',
+                textSecondary: '#3c2415',
+                borderColor: '#ffe0e0'
+            },
+            ocean: {
+                primary: '#1abc9c',
+                secondary: '#3498db',
+                cardBg: '#f0f9f7',
+                bodyBg: '#e8f4f1',
+                textPrimary: '#1a3c35',
+                textSecondary: '#2c4e45',
+                borderColor: '#d0e9e3'
+            },
+            lavender: {
+                primary: '#9b59b6',
+                secondary: '#8e44ad',
+                cardBg: '#f9f0ff',
+                bodyBg: '#f5e8ff',
+                textPrimary: '#2d1a35',
+                textSecondary: '#3c2445',
+                borderColor: '#e8d0f5'
+            },
+            forest: {
+                primary: '#27ae60',
+                secondary: '#2ecc71',
+                cardBg: '#f0f7f3',
+                bodyBg: '#e8f4ed',
+                textPrimary: '#1a352d',
+                textSecondary: '#2c453c',
+                borderColor: '#d0e9dc'
+            }
+        };
+        return themes[themeName] || themes.default;
+    }
+
+    function toggleCustomColorsSection(show) {
+        const customColorsSection = document.getElementById('customColorsSection');
+        if (customColorsSection) {
+            customColorsSection.style.display = show ? 'block' : 'none';
+        }
+    }
+
+    function updateCustomThemePreview(primary, secondary) {
+        const customTheme = document.querySelector('.color-theme[data-theme="custom"]');
+        if (customTheme) {
+            const preview = customTheme.querySelector('.theme-preview');
+            if (preview) {
+                preview.style.background = `linear-gradient(45deg, ${primary}, ${secondary})`;
+            }
+        }
+    }
+
+    function applyTheme(theme) {
+        console.log('Applying theme:', theme); // Debug log
+        
+        // Set the theme attribute on the body
+        document.body.setAttribute('data-theme', theme.name || 'default');
+        
+        if (theme.name === 'custom') {
+            // Set CSS variables for custom theme
+            document.documentElement.style.setProperty('--primary-color', theme.primary);
+            document.documentElement.style.setProperty('--secondary-color', theme.secondary);
+            document.documentElement.style.setProperty('--card-bg', theme.cardBg);
+            document.documentElement.style.setProperty('--body-bg', theme.bodyBg);
+            document.documentElement.style.setProperty('--text-primary', theme.textPrimary);
+            document.documentElement.style.setProperty('--text-secondary', theme.textSecondary);
+            document.documentElement.style.setProperty('--border-color', theme.borderColor);
+        }
+        
+        // Update color inputs if they exist
+        const primaryColorInput = document.getElementById('primaryColor');
+        const secondaryColorInput = document.getElementById('secondaryColor');
+        if (primaryColorInput && secondaryColorInput) {
+            primaryColorInput.value = theme.primary;
+            secondaryColorInput.value = theme.secondary;
+            // Update color previews immediately
+            updateColorPreviews();
+            // Update custom theme preview
+            updateCustomThemePreview(theme.primary, theme.secondary);
+        }
+        
+        // Update active theme preview
+        const activeTheme = document.querySelector('.color-theme.active');
+        if (activeTheme) {
+            activeTheme.querySelector('.theme-preview').style.borderColor = theme.primary;
+        }
+    }
+
+    function updateColorPreviews() {
+        const primaryPreview = document.getElementById('primaryColorPreview');
+        const secondaryPreview = document.getElementById('secondaryColorPreview');
+        if (primaryPreview && secondaryPreview) {
+            primaryPreview.style.backgroundColor = primaryColorInput.value;
+            secondaryPreview.style.backgroundColor = secondaryColorInput.value;
+        }
+    }
 
     // Handle theme selection
     colorThemes.forEach(theme => {
         theme.addEventListener('click', () => {
+            const themeName = theme.dataset.theme;
+            console.log('Theme clicked:', themeName); // Debug log
+            
             // Remove active class from all themes
             colorThemes.forEach(t => t.classList.remove('active'));
             // Add active class to selected theme
             theme.classList.add('active');
             
-            const themeName = theme.dataset.theme;
-            const themeColors = getThemeColors(themeName);
-            
-            // Update color inputs
-            primaryColorInput.value = themeColors.primary;
-            secondaryColorInput.value = themeColors.secondary;
+            if (themeName === 'custom') {
+                console.log('Custom theme selected, current custom colors:', customColors); // Debug log
+                
+                // For custom theme, use the saved custom colors
+                const currentCustomTheme = {
+                    ...customColors,
+                    name: 'custom'
+                };
+                
+                // Show custom colors section
+                toggleCustomColorsSection(true);
+                
+                // Apply the custom theme
+                applyTheme(currentCustomTheme);
+                
+                // Save current theme to localStorage
+                localStorage.setItem('dashboardTheme', JSON.stringify(currentCustomTheme));
+            } else {
+                // For preset themes, use the predefined colors
+                const presetTheme = {
+                    ...getThemeColors(themeName),
+                    name: themeName
+                };
+                
+                // Hide custom colors section
+                toggleCustomColorsSection(false);
+                
+                // Apply the preset theme
+                applyTheme(presetTheme);
+                
+                // Save current theme to localStorage
+                localStorage.setItem('dashboardTheme', JSON.stringify(presetTheme));
+                
+                // Update custom theme preview with current custom colors
+                updateCustomThemePreview(customColors.primary, customColors.secondary);
+            }
         });
     });
 
     // Handle custom color inputs
+    const primaryColorPreview = document.getElementById('primaryColorPreview');
+    const secondaryColorPreview = document.getElementById('secondaryColorPreview');
+
+    // Make color previews clickable
+    primaryColorPreview.addEventListener('click', () => {
+        primaryColorInput.click();
+    });
+
+    secondaryColorPreview.addEventListener('click', () => {
+        secondaryColorInput.click();
+    });
+
     [primaryColorInput, secondaryColorInput].forEach(input => {
         input.addEventListener('input', () => {
-            // Remove active class from preset themes when custom colors are used
-            colorThemes.forEach(theme => theme.classList.remove('active'));
+            console.log('Color input changed:', input.id, input.value); // Debug log
+            
+            // Activate custom theme when colors are changed
+            const customThemeElement = document.querySelector('.color-theme[data-theme="custom"]');
+            if (customThemeElement) {
+                colorThemes.forEach(t => t.classList.remove('active'));
+                customThemeElement.classList.add('active');
+                toggleCustomColorsSection(true);
+            }
+            
+            // Update color previews
+            updateColorPreviews();
+            
+            // Update custom theme preview
+            updateCustomThemePreview(primaryColorInput.value, secondaryColorInput.value);
+            
+            // Update custom colors
+            customColors = {
+                ...customColors,
+                primary: primaryColorInput.value,
+                secondary: secondaryColorInput.value
+            };
+            
+            console.log('Updated custom colors:', customColors); // Debug log
+            
+            // Save custom colors to localStorage
+            localStorage.setItem('customColors', JSON.stringify(customColors));
+            
+            // Create and apply custom theme
+            const updatedCustomTheme = {
+                ...customColors,
+                name: 'custom'
+            };
+            
+            // Apply the custom theme
+            applyTheme(updatedCustomTheme);
+            
+            // Save current theme to localStorage
+            localStorage.setItem('dashboardTheme', JSON.stringify(updatedCustomTheme));
         });
     });
 
+    // Load saved theme from localStorage
+    const savedTheme = localStorage.getItem('dashboardTheme');
+    if (savedTheme) {
+        const theme = JSON.parse(savedTheme);
+        console.log('Loading saved theme:', theme); // Debug log
+        
+        // Update color inputs
+        primaryColorInput.value = theme.primary;
+        secondaryColorInput.value = theme.secondary;
+        
+        // Update color previews
+        updateColorPreviews();
+        
+        // Update custom theme preview
+        updateCustomThemePreview(theme.primary, theme.secondary);
+        
+        // Activate the appropriate theme button
+        const themeElement = document.querySelector(`.color-theme[data-theme="${theme.name}"]`);
+        if (themeElement) {
+            colorThemes.forEach(t => t.classList.remove('active'));
+            themeElement.classList.add('active');
+            toggleCustomColorsSection(theme.name === 'custom');
+        }
+        
+        // Apply the theme
+        applyTheme(theme);
+    } else {
+        // Default to showing custom colors section
+        toggleCustomColorsSection(true);
+    }
+
     // Save theme changes
     saveThemeBtn.addEventListener('click', () => {
-        const theme = {
-            primary: primaryColorInput.value,
-            secondary: secondaryColorInput.value
-        };
+        const activeTheme = document.querySelector('.color-theme.active');
+        let theme;
+        
+        if (activeTheme) {
+            const themeName = activeTheme.dataset.theme;
+            if (themeName === 'custom') {
+                // If custom theme is selected, use the current color input values
+                theme = {
+                    name: 'custom',
+                    primary: primaryColorInput.value,
+                    secondary: secondaryColorInput.value,
+                    cardBg: '#ffffff',
+                    bodyBg: '#f8f9fa',
+                    textPrimary: '#2c3e50',
+                    textSecondary: '#34495e',
+                    borderColor: '#e0e0e0'
+                };
+            } else {
+                // If a preset theme is selected
+                theme = { ...getThemeColors(themeName), name: themeName };
+            }
+        } else {
+            // If no theme is selected, use custom colors
+            theme = {
+                name: 'custom',
+                primary: primaryColorInput.value,
+                secondary: secondaryColorInput.value,
+                cardBg: '#ffffff',
+                bodyBg: '#f8f9fa',
+                textPrimary: '#2c3e50',
+                textSecondary: '#34495e',
+                borderColor: '#e0e0e0'
+            };
+        }
         
         // Save to localStorage
         localStorage.setItem('dashboardTheme', JSON.stringify(theme));
@@ -280,49 +548,7 @@ document.addEventListener("DOMContentLoaded", function () {
         customizeModal.hide();
     });
 
-    function getThemeColors(themeName) {
-        const themes = {
-            default: { primary: '#3498db', secondary: '#2ecc71' },
-            sunset: { primary: '#e74c3c', secondary: '#f39c12' },
-            ocean: { primary: '#1abc9c', secondary: '#3498db' },
-            lavender: { primary: '#9b59b6', secondary: '#8e44ad' },
-            forest: { primary: '#27ae60', secondary: '#2ecc71' }
-        };
-        return themes[themeName] || themes.default;
-    }
-
-    function applyTheme(theme) {
-        const root = document.documentElement;
-        
-        // Update CSS variables
-        root.style.setProperty('--primary-color', theme.primary);
-        root.style.setProperty('--secondary-color', theme.secondary);
-        
-        // Update button colors
-        document.querySelectorAll('.btn-primary').forEach(btn => {
-            btn.style.backgroundColor = theme.primary;
-            btn.style.borderColor = theme.primary;
-        });
-        
-        // Update form focus states
-        const styleSheet = document.styleSheets[0];
-        const focusRule = `:focus { border-color: ${theme.primary} !important; box-shadow: 0 0 0 0.2rem ${theme.primary}40 !important; }`;
-        
-        // Remove existing focus rule if it exists
-        for (let i = 0; i < styleSheet.cssRules.length; i++) {
-            if (styleSheet.cssRules[i].selectorText === ':focus') {
-                styleSheet.deleteRule(i);
-                break;
-            }
-        }
-        
-        // Add new focus rule
-        styleSheet.insertRule(focusRule, styleSheet.cssRules.length);
-        
-        // Update active theme preview
-        const activeTheme = document.querySelector('.color-theme.active');
-        if (activeTheme) {
-            activeTheme.querySelector('.theme-preview').style.borderColor = theme.primary;
-        }
-    }
+    customizeBtn.addEventListener('click', () => {
+        customizeModal.show();
+    });
 });
