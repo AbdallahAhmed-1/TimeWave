@@ -32,17 +32,17 @@ public class PageController {
     @GetMapping({"/", "/home"})
     public String homePage(Model model) {
         // Dummy memories
-        List<Memory> memories = Arrays.asList(
-                new Memory("Trip to Paris", "Saw the Eiffel Tower", "2023-04-20", "Paris", "relax", "content", "image"),
-                new Memory("Beach day", "Relaxed by the sea", "2024-07-15", "Barcelona", "anxious", "content", "image")
-        );
-
-        // Dummy "On This Day"
-        String onThisDay = "Today, 2 years ago, you graduated! 🎓";
-
-        // Attach to model
-        model.addAttribute("memories", memories);
-        model.addAttribute("onThisDay", onThisDay);
+//        List<Memory> memories = Arrays.asList(
+//                new Memory("Trip to Paris", "Saw the Eiffel Tower", "2023-04-20", "Paris", "relax", "content", "image"),
+//                new Memory("Beach day", "Relaxed by the sea", "2024-07-15", "Barcelona", "anxious", "content", "image")
+//        );
+//
+//        // Dummy "On This Day"
+//        String onThisDay = "Today, 2 years ago, you graduated! 🎓";
+//
+//        // Attach to model
+//        model.addAttribute("memories", memories);
+//        model.addAttribute("onThisDay", onThisDay);
 
         return "index";  // Still render index.html
     }

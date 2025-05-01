@@ -9,7 +9,6 @@
     <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
             rel="stylesheet"
-            integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
             crossorigin="anonymous"/>
 
     <!-- Your custom styles -->
@@ -39,14 +38,43 @@
                 </button>
             </div>
         </div>
-        <button class="btn btn-primary" id="new-entry">+ New Entry</button>
     </div>
 
-    <!-- Your Journey -->
+    <!-- New Memory Form -->
     <div class="card p-4 mb-4">
-        <h5><strong>Your Journey</strong></h5>
-        <textarea rows="7" cols="60" class="form-control border-0"
-                  placeholder="Interactive timeline visualization"></textarea>
+        <h5><strong>Create a New Memory</strong></h5>
+        <form id="entryForm">
+            <div class="mb-3">
+                <label for="entryType" class="form-label">Type</label>
+                <select class="form-select" id="entryType" required>
+                    <option value="">Choose...</option>
+                    <option value="text">Text</option>
+                    <option value="photo">Photo</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="entryTitle" class="form-label">Title</label>
+                <input type="text" class="form-control" id="entryTitle" required />
+            </div>
+            <div class="mb-3" id="textInput" style="display: none;">
+                <label for="entryText" class="form-label">Memory Text</label>
+                <textarea class="form-control" id="entryText" rows="3"></textarea>
+            </div>
+            <div class="mb-3" id="photoInput" style="display: none;">
+                <label for="entryPhoto" class="form-label">Upload Photo</label>
+                <input type="file" class="form-control" id="entryPhoto" accept="image/*" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Record Audio</label><br/>
+                <button type="button" class="btn btn-secondary" id="recordAudioBtn">🎙️ Record Audio</button>
+                <audio id="audioPreview" controls style="display: none; margin-top: 10px;"></audio>
+            </div>
+            <div class="mb-3">
+                <label for="entryLocation" class="form-label">Location</label>
+                <input type="text" class="form-control" id="entryLocation" />
+            </div>
+            <button type="submit" class="btn btn-primary">Save Memory</button>
+        </form>
     </div>
 
     <div class="row">
@@ -71,61 +99,20 @@
             </div>
             <div class="card mb-3 p-3" id="mini-cards">
                 <h5 class="mb-3"><strong>Mood Trends</strong></h5>
-                <!-- You could insert a chart here later -->
                 <p>Chart goes here</p>
             </div>
         </div>
     </div>
 </div>
-<!-- New Entry Modal -->
-<div class="modal fade" id="entryModal" tabindex="-1" aria-labelledby="entryModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="entryForm">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="entryModalLabel">New Memory</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="entryType" class="form-label">Type</label>
-                        <select class="form-select" id="entryType" required>
-                            <option value="">Choose...</option>
-                            <option value="text">Text</option>
-                            <option value="photo">Photo</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="entryTitle" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="entryTitle" required />
-                    </div>
-                    <div class="mb-3" id="textInput" style="display: none;">
-                        <label for="entryText" class="form-label">Memory Text</label>
-                        <textarea class="form-control" id="entryText" rows="3"></textarea>
-                    </div>
-                    <div class="mb-3" id="photoInput" style="display: none;">
-                        <label for="entryPhoto" class="form-label">Upload Photo</label>
-                        <input type="file" class="form-control" id="entryPhoto" accept="image/*" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="entryLocation" class="form-label">Location</label>
-                        <input type="text" class="form-control" id="entryLocation" />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Save Memory</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+
+<!-- Map Section -->
 <div id="map" style="height: 500px; display: none; margin-top: 20px;"></div>
 
+<!-- Scripts -->
 <script th:src="@{/js/dashboard.js}"></script>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 </body>
 </html>

@@ -1,15 +1,17 @@
 package com.timewave.timewave.controller;
 
-import com.timewave.timewave.model.Memory;
-import com.timewave.timewave.model.User;
+import com.timewave.timewave.model.*;
 import com.timewave.timewave.repository.MemoryRepository;
 import com.timewave.timewave.repository.UserRepository;
 import com.timewave.timewave.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -32,39 +34,50 @@ public class MemoryController {
     private FileService fileService;
     @PostMapping
     public ResponseEntity<?> createMemory(@RequestParam String title,
-                                          @RequestParam String location,
-                                          @RequestParam String type,
                                           @RequestParam(required = false) String content,
-                                          @RequestParam(required = false) MultipartFile photo) {
+                                          @RequestParam String location,
+                                          @RequestParam(required = false) MultipartFile photo,
+                                          @RequestParam(required = false) MultipartFile audio) {
         try {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            Optional<User> userOpt = userRepository.findByEmail(email);
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-            if (userOpt.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not found"));
-            }
-
-            User user = userOpt.get();
             Memory memory = new Memory();
             memory.setTitle(title);
+            memory.setDescription(content); // or store as description
             memory.setLocation(location);
-            memory.setType(type);
             memory.setUser(user);
 
-            if ("text".equals(type)) {
-                memory.setContent(content);
-            } else if ("photo".equals(type) && photo != null) {
-                String photoPath = fileService.savePhoto(photo); // This could throw
-                memory.setContent(photoPath);
+            // Create attachment list
+            List<Attachment> attachments = new ArrayList<>();
+
+            if (photo != null && !photo.isEmpty()) {
+                String path = fileService.savePhoto(photo);
+                PhotoAttachment photoAttachment = new PhotoAttachment();
+                photoAttachment.setFilePath(path);
+                photoAttachment.setMimeType(photo.getContentType());
+                photoAttachment.setMemory(memory);
+                attachments.add(photoAttachment);
             }
 
+            if (audio != null && !audio.isEmpty()) {
+                String path = fileService.saveAudio(audio);
+                AudioAttachment audioAttachment = new AudioAttachment();
+                audioAttachment.setFilePath(path);
+                audioAttachment.setMimeType(audio.getContentType());
+                audioAttachment.setMemory(memory);
+                attachments.add(audioAttachment);
+            }
+
+            memory.setAttachments(attachments);
             Memory saved = memoryRepository.save(memory);
             return ResponseEntity.ok(saved);
 
         } catch (Exception e) {
-            e.printStackTrace(); // Log to server
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Something went wrong", "details", e.getMessage()));
+                    .body(Map.of("error", "Failed to create memory", "details", e.getMessage()));
         }
     }
 
