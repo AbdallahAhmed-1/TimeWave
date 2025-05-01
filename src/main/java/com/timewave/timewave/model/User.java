@@ -33,6 +33,10 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Memory> memories = new ArrayList<>();
 
+    @Override
+    public String getUsername() {
+        return email; // Return email here
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

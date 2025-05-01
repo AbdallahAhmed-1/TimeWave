@@ -23,10 +23,7 @@ public class PageController {
     @PostMapping("/login")
     public String loginSubmit(@RequestParam String email, @RequestParam String password) {
         // Authenticate the user (example check)
-        if ("admin@example.com".equals(email) && "password123".equals(password)) {
-            return "redirect:/home";  // Redirect to home if successful
-        }
-        return "redirect:/login?error";  // Redirect back to login page with error
+        return "login";
     }
 
     @GetMapping({"/", "/home"})

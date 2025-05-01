@@ -1,5 +1,6 @@
 package com.timewave.timewave.controller;
 
+import com.timewave.timewave.dataTransfer.MemoryDTO;
 import com.timewave.timewave.model.*;
 import com.timewave.timewave.repository.MemoryRepository;
 import com.timewave.timewave.repository.UserRepository;
@@ -17,6 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.security.core.Authentication;
 
 @RestController
@@ -72,7 +75,8 @@ public class MemoryController {
 
             memory.setAttachments(attachments);
             Memory saved = memoryRepository.save(memory);
-            return ResponseEntity.ok(saved);
+            MemoryDTO memoryDTO = new MemoryDTO(saved);
+            return ResponseEntity.ok(memoryDTO);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -104,7 +108,10 @@ public class MemoryController {
 
     // Get all memories (optional, for testing purposes)
     @GetMapping
-    public List<Memory> getAllMemories() {
-        return memoryRepository.findAll();
+    public List<MemoryDTO> getAllMemories() {
+        return memoryRepository.findAll().stream()
+                .map(MemoryDTO::new)
+                .collect(Collectors.toList());
     }
+
 }

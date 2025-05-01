@@ -31,7 +31,22 @@ document.addEventListener("DOMContentLoaded", function () {
             photoInput.style.display = "none";
         }
     });
-
+    // Logout button: send a request to the server to log the user out
+    document.getElementById("logoutBtn").addEventListener("click", function () {
+        fetch("/api/v1/auth/logout", {
+            method: "GET",
+            credentials: "include"
+        })
+            .then(() => {
+                // Optional: remove token if you're still storing it in localStorage
+                localStorage.removeItem("token");
+                window.location.href = "/login";
+            })
+            .catch(err => {
+                console.error("Logout failed:", err);
+                alert("Error logging out. Please try again.");
+            });
+    });
     // Record audio button: start/stop recording using MediaRecorder API
     recordBtn.addEventListener("click", async () => {
         if (!mediaRecorder || mediaRecorder.state === "inactive") {
@@ -124,23 +139,23 @@ document.addEventListener("DOMContentLoaded", function () {
         const container = document.getElementById("mini-cards");
         const div = document.createElement("div");
 
-        let attachmentsHtml = '';
+        let contentHtml = `<p>${memory.description || ''}</p>`;
 
-        if (memory.attachments && memory.attachments.length > 0) {
+        if (Array.isArray(memory.attachments)) {
             memory.attachments.forEach(att => {
-                if (att.type === "photo") {
-                    attachmentsHtml += `<img src="/uploads/${att.filePath}" alt="${memory.title}" class="img-thumbnail mb-2" style="max-width: 100%; height: auto;">`;
-                } else if (att.type === "audio") {
-                    attachmentsHtml += `<audio controls src="/uploads/${att.filePath}" class="w-100 mb-2"></audio>`;
+                if (att.mimeType.startsWith("image/")) {
+                    contentHtml += `<img src="${att.filePath}" alt="${memory.title}" class="img-thumbnail" style="max-width: 100%; height: auto;">`;
+                } else if (att.mimeType.startsWith("audio/")) {
+                    contentHtml += `<audio controls src="${att.filePath}"></audio>`;
                 }
+                // Add more types as needed
             });
         }
 
         div.innerHTML = `
         <h6>${memory.title}</h6>
-        <p>${memory.description || ''}</p>
-        ${attachmentsHtml}
-        <small>${memory.date || ''} | ${memory.location || ''}</small>
+        ${contentHtml}
+        <small>${memory.location || ''}</small>
         <hr/>
     `;
 

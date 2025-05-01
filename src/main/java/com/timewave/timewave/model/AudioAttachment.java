@@ -11,5 +11,4 @@ public class AudioAttachment extends Attachment {
 
     private Integer durationSeconds; // Optional metadata
 
-    // You could add fields like format, bitrate, etc. if needed
 }
