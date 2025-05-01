@@ -1,92 +1,29 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const newEntryBtn = document.getElementById("new-entry");
-    const entryModal = new bootstrap.Modal(document.getElementById("entryModal"));
-    const entryType = document.getElementById("entryType");
-    const textInput = document.getElementById("textInput");
-    const photoInput = document.getElementById("photoInput");
-    const entryForm = document.getElementById("entryForm");
+document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('token');
 
-    // Show modal when clicking "+ New Entry"
-    newEntryBtn.addEventListener("click", () => {
-        entryModal.show();
-    });
-
-    // Toggle input fields based on selected type
-    entryType.addEventListener("change", () => {
-        const type = entryType.value;
-        textInput.style.display = type === "text" ? "block" : "none";
-        photoInput.style.display = type === "photo" ? "block" : "none";
-    });
-
-    // Handle form submission
-    entryForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        const type = entryType.value;
-        const title = document.getElementById("entryTitle").value;
-        const text = document.getElementById("entryText").value;
-        const photo = document.getElementById("entryPhoto").files[0];
-        const location = document.getElementById("entryLocation").value;
-
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("location", location);
-        formData.append("type", type);
-
-        if (type === "text") {
-            formData.append("content", text);
-        } else if (type === "photo" && photo) {
-            formData.append("photo", photo);
-        }
-
-        // Sending POST request to create a memory
-        // fetch("/api/memories", {
-        //     method: "POST",
-        //     body: formData,
-        // })
-        //     .then((res) => {
-        //         if (!res.ok) {
-        //             return res.text().then(text => {
-        //                 throw new Error(`Server error (${res.status}): ${text}`);
-        //             });
-        //         }
-        //         return res.json();
-        //     })
-        //     .then((data) => {
-        //         alert("Memory saved successfully!");
-        //         entryModal.hide();
-        //         entryForm.reset();
-        //         textInput.style.display = "none";
-        //         photoInput.style.display = "none";
-        //         appendMemoryToRecent(data);
-        //     })
-        //     .catch((err) => {
-        //         console.error("Detailed error:", err.message);
-        //         alert("Error saving memory: " + err.message);
-        //     });
-
-    });
-});
-
-// Function to append the newly created memory to the "Recent Memories" section
-function appendMemoryToRecent(memory) {
-    const container = document.getElementById("mini-cards");
-    const div = document.createElement("div");
-
-    let contentHtml = '';
-    if (memory.type === "text") {
-        contentHtml = `<p>${memory.content}</p>`;
-    } else if (memory.type === "photo") {
-        contentHtml = `<img src="/uploads/${memory.content}" alt="${memory.title}" class="img-thumbnail" style="max-width: 100%; height: auto;">`;
+    if (!token) {
+        window.location.href = '/login';
+        return;
     }
 
-    div.innerHTML = `
-        <h6>${memory.title}</h6>
-        ${contentHtml}
-        <small>${memory.date} | ${memory.location}</small>
-        <hr/>
-    `;
-
-    container.prepend(div);
-}
-
+    fetch('/api/v1/auth/authenticate', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Unauthorized');
+            }
+            return response.json();
+        })
+        .then(user => {
+            console.log("Loaded user:", user);
+            document.getElementById('welcome').textContent = `Welcome, ${user.username}!`;
+        })
+        .catch(error => {
+            console.error(error);
+            window.location.href = '/login';
+        });
+});
