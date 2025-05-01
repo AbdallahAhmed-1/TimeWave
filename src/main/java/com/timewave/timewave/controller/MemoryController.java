@@ -6,11 +6,13 @@ import com.timewave.timewave.repository.MemoryRepository;
 import com.timewave.timewave.repository.UserRepository;
 import com.timewave.timewave.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.Optional;
+import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/api/memories")
@@ -64,6 +66,26 @@ public class MemoryController {
             throw new RuntimeException("User not found");
         }
     }
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<?> deleteMemory(@PathVariable Long id, Authentication authentication) {
+//        Optional<Memory> memoryOpt = memoryRepository.findById(id);
+//
+//        if (memoryOpt.isEmpty()) {
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//        Memory memory = memoryOpt.get();
+//        String email = authentication.getName();
+//
+//        if (!memory.getUser().getEmail().equals(email)) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You cannot delete someone else's memory");
+//        }
+//
+//        memoryRepository.delete(memory);
+//        return ResponseEntity.ok().body("Memory deleted");
+//    }
+//
+
 
     // Get all memories (optional, for testing purposes)
     @GetMapping
