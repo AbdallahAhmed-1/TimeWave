@@ -72,6 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Authorization": "Bearer " + token
             },
             body: formData,
+            credentials: "include"
         })
             .then((res) => {
                 if (!res.ok) {
@@ -94,25 +95,51 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert("Error saving memory: " + err.message);
             });
     });
-});
 
-function appendMemoryToRecent(memory) {
-    const container = document.getElementById("mini-cards");
-    const div = document.createElement("div");
+    function appendMemoryToRecent(memory) {
+        const container = document.getElementById("mini-cards");
+        const div = document.createElement("div");
 
-    let contentHtml = '';
-    if (memory.type === "text") {
-        contentHtml = `<p>${memory.content}</p>`;
-    } else if (memory.type === "photo") {
-        contentHtml = `<img src="/uploads/${memory.content}" alt="${memory.title}" class="img-thumbnail" style="max-width: 100%; height: auto;">`;
-    }
+        let contentHtml = '';
+        if (memory.type === "text") {
+            contentHtml = `<p>${memory.content}</p>`;
+        } else if (memory.type === "photo") {
+            contentHtml = `<img src="/uploads/${memory.content}" alt="${memory.title}" class="img-thumbnail" style="max-width: 100%; height: auto;">`;
+        }
 
-    div.innerHTML = `
+        div.innerHTML = `
         <h6>${memory.title}</h6>
         ${contentHtml}
         <small>${memory.date} | ${memory.location}</small>
         <hr/>
     `;
 
-    container.prepend(div);
-}
+        container.prepend(div);
+    }
+
+        const mapButton = document.querySelector('#mapTab');
+        const mapDiv = document.getElementById('map');
+        let mapInitialized = false;
+
+        if (mapButton) {
+            mapButton.addEventListener('click', () => {
+                mapDiv.style.display = 'block';
+
+                if (!mapInitialized) {
+                    const map = L.map('map').setView([25.2048, 55.2708], 12);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; OpenStreetMap contributors'
+                    }).addTo(map);
+
+                    L.marker([25.2048, 55.2708]).addTo(map)
+                        .bindPopup('Dubai')
+                        .openPopup();
+
+                    mapInitialized = true;
+                }
+            });
+        } else {
+            console.warn("Map button with id 'mapTab' not found.");
+        }
+
+});
