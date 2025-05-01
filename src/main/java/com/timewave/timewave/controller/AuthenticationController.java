@@ -5,8 +5,12 @@ import com.timewave.timewave.auth.AuthenticationResponse;
 import com.timewave.timewave.auth.AuthenticationService;
 import com.timewave.timewave.auth.RegisterRequest;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
@@ -20,16 +24,39 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody RegisterRequest request
+            @RequestBody RegisterRequest request,
+            HttpServletResponse response
+
     ){
-        return ResponseEntity.ok(service.register(request));
+        AuthenticationResponse authResponse = service.register(request);
+
+        ResponseCookie cookie = ResponseCookie.from("jwt", authResponse.getToken())
+                .httpOnly(true)
+                .secure(false) // change to true in production (HTTPS)
+                .path("/")
+                .maxAge(24 * 60 * 60)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        return ResponseEntity.ok(authResponse);
 
     }
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody AuthenticationRequest request
+    public ResponseEntity<AuthenticationResponse> authenticate(
+            @RequestBody AuthenticationRequest request,
+            HttpServletResponse response
     ){
-        return ResponseEntity.ok(service.authenticate(request));
+        AuthenticationResponse authResponse = service.authenticate(request);
+
+        ResponseCookie cookie = ResponseCookie.from("jwt", authResponse.getToken())
+                .httpOnly(true)
+                .secure(false) // change to true in production
+                .path("/")
+                .maxAge(24 * 60 * 60)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        return ResponseEntity.ok(authResponse);
 
     }
 }

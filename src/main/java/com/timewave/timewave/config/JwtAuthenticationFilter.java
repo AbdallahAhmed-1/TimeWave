@@ -2,6 +2,7 @@ package com.timewave.timewave.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -21,50 +22,54 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        return path.startsWith("/api/v1/auth") || path.equals("/login") || path.equals("/register");
+    }
 
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
-            ) throws ServletException, IOException{
-        // when we make a call, we need to pass the token into the
-        // "Authorization" Header
+    ) throws ServletException, IOException {
 
-        // extract header, part of request
-        final String authHeader = request.getHeader("Authorization"); // contains Jwt token
-        final String jwt;
-        final String userEmail;
+        String jwt = null;
+        String userEmail = null;
 
-        // check the jwt token
-        if (authHeader == null || !authHeader.startsWith("Bearer ")){
-            filterChain.doFilter(request, response); // pass it to next filter
-            return; // early return, since it's invalid
+        // Try Authorization header first
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwt = authHeader.substring(7);
         }
 
-        // extract token from header
-        jwt = authHeader.substring(7); // first 7 would be "Bearer ". Get the rest.
-
-        userEmail = jwtService.extractUsername(jwt); // get the username from the token (Decode)
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            // if it's not yet authenticated, get user from database to compare details
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-            if(jwtService.isTokenValid(jwt, userDetails)){
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-
-                // give more details
-                authenticationToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
-                // update security context
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
+        // If not in header, try cookies
+        if (jwt == null && request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("jwt".equals(cookie.getName())) {
+                    jwt = cookie.getValue();
+                    break;
+                }
             }
         }
+
+        if (jwt != null) {
+            userEmail = jwtService.extractUsername(jwt);
+        }
+
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+            if (jwtService.isTokenValid(jwt, userDetails)) {
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities()
+                );
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+        }
+
         filterChain.doFilter(request, response);
     }
-}
+    }
+

@@ -90,31 +90,3 @@ function appendMemoryToRecent(memory) {
     container.prepend(div);
 }
 
-
-document.addEventListener('DOMContentLoaded', () => {
-    const mapButton = document.querySelector('#mapTab');
-    const mapDiv = document.getElementById('map');
-    let mapInitialized = false;
-
-    if (mapButton) {
-        mapButton.addEventListener('click', () => {
-            mapDiv.style.display = 'block';
-
-            if (!mapInitialized) {
-                const map = L.map('map').setView([25.2048, 55.2708], 12);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; OpenStreetMap contributors'
-                }).addTo(map);
-
-                L.marker([25.2048, 55.2708]).addTo(map)
-                    .bindPopup('Dubai')
-                    .openPopup();
-
-                mapInitialized = true;
-            }
-        });
-    } else {
-        console.warn("Map button with id 'mapTab' not found.");
-    }
-});
-
