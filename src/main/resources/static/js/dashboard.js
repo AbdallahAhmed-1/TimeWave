@@ -88,6 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const location = document.getElementById("entryLocation").value;
         const latitude = document.getElementById("latitude").value;
         const longitude = document.getElementById("longitude").value;
+        const date = document.getElementById("entryDate").value;
 
         const formData = new FormData();
         formData.append("title", title);
@@ -95,6 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.append("latitude", latitude);
         formData.append("longitude", longitude);
         formData.append("type", type);
+        formData.append("date", date);
 
         if (type === "text") {
             formData.append("content", text);
@@ -201,7 +203,9 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(data => {
             const container = document.getElementById("mini-cards");
+            container.innerHTML = "";
             data.forEach(memory => {
+                appendMemoryToRecent(memory);
                 if (memory.latitude && memory.longitude && !isNaN(memory.latitude) && mainMap) {
                     const marker = L.marker([memory.latitude, memory.longitude])
                         .addTo(mainMap)

@@ -12,12 +12,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
@@ -42,7 +40,8 @@ public class MemoryController {
                                           @RequestParam(required = false) MultipartFile photo,
                                           @RequestParam(required = false) MultipartFile audio,
                                           @RequestParam(required = false) Double latitude,
-                                          @RequestParam(required = false) Double longitude
+                                          @RequestParam(required = false) Double longitude,
+                                          @RequestParam (required = false) String date
     ){
         try {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -56,6 +55,7 @@ public class MemoryController {
             memory.setUser(user);
             memory.setLatitude(latitude);
             memory.setLongitude(longitude);
+            memory.setDate(date);
 
             // Create attachment list
             List<Attachment> attachments = new ArrayList<>();
@@ -89,26 +89,52 @@ public class MemoryController {
                     .body(Map.of("error", "Failed to create memory", "details", e.getMessage()));
         }
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateMemory(@PathVariable Long id,
+                                          @RequestParam(required = false) String title,
+                                          @RequestParam(required = false) String description,
+                                          @RequestParam(required = false) String location,
+                                          @RequestParam(required = false) String date,
+                                          @RequestParam(required = false) String mood) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<?> deleteMemory(@PathVariable Long id, Authentication authentication) {
-//        Optional<Memory> memoryOpt = memoryRepository.findById(id);
-//
-//        if (memoryOpt.isEmpty()) {
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//        Memory memory = memoryOpt.get();
-//        String email = authentication.getName();
-//
-//        if (!memory.getUser().getEmail().equals(email)) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You cannot delete someone else's memory");
-//        }
-//
-//        memoryRepository.delete(memory);
-//        return ResponseEntity.ok().body("Memory deleted");
-//    }
-//
+        return memoryRepository.findById(id).map(memory -> {
+            if (!memory.getUser().getId().equals(user.getId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not your memory");
+            }
+
+            if (title != null) memory.setTitle(title);
+            if (description != null) memory.setDescription(description);
+            if (location != null) memory.setLocation(location);
+            if (date != null) memory.setDate(date);
+            if (mood != null) memory.setMood(mood);
+
+            memoryRepository.save(memory);
+            return ResponseEntity.ok(new MemoryDTO(memory));
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteMemory(@PathVariable Long id) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        return memoryRepository.findById(id).map(memory -> {
+            if (!memory.getUser().getId().equals(user.getId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not your memory");
+            }
+
+            memoryRepository.delete(memory);
+            return ResponseEntity.ok().body("Memory deleted");
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+
+
+
 
 
     // Get all memories (optional, for testing purposes)
@@ -117,6 +143,17 @@ public class MemoryController {
         return memoryRepository.findAll().stream()
                 .map(MemoryDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/calendar-data")
+    public Map<String, Object> getCalendarData() {
+        return memoryRepository.findAll().stream()
+                .filter(m -> m.getDate() != null)
+                .collect(Collectors.toMap(
+                        Memory::getDate,
+                        memory -> Map.of("mood", memory.getMood() != null ? memory.getMood() : "neutral"),
+                        (existing, replacement) -> existing
+                ));
     }
 
 }

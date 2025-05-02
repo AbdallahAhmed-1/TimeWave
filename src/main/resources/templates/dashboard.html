@@ -17,6 +17,10 @@
     <!-- Your custom styles -->
     <link rel="stylesheet" th:href="@{/css/styleDash.css}"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- for heatmap-->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/cal-heatmap/dist/cal-heatmap.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/cal-heatmap/dist/cal-heatmap.css">
 </head>
 <body class="bg-light">
 
@@ -87,9 +91,16 @@
                 <input type="hidden" id="longitude" name="longitude">
             </div>
             <input type="text" class="form-control" id="entryLocation" placeholder="Optional location name" />
+
+            <div class="mb-3">
+                <label for="entryDate" class="form-label">Date</label>
+                <input type="date" class="form-control" id="entryDate" required />
+            </div>
+            <div class="mb-3">
             <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save me-2"></i>Save Memory
+                <i class="fas fa-save me-2">Save Memory</i>
             </button>
+            </div>
         </form>
     </div>
 
@@ -98,6 +109,13 @@
         <div class="memory-content">
             <h5 class="memory-title"><i class="fas fa-map-marked-alt me-2"></i>Memory Locations</h5>
             <div id="map" style="height: 300px; border-radius: 8px;"></div>
+        </div>
+    </div>
+
+    <div id="heatMap" class="memory-card">
+        <div class="memory-content">
+            <h5 class="memory-title"><i class="fas fa-calendar-day me-2"></i>Timeline</h5>
+            <div id="cal-heatmap"></div>
         </div>
     </div>
 
@@ -140,6 +158,9 @@
 
 <!-- Scripts -->
 <script th:src="@{/js/dashboard.js}"></script>
+<script th:src="@{/js/calendarHeatmap.js}"></script>
+<!-- Cal-Heatmap JS -->
+
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
