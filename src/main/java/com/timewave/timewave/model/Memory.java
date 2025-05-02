@@ -21,6 +21,8 @@ public class Memory {
     private String date;
     private String location;
     private String mood;
+    private Double latitude;
+    private Double longitude;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

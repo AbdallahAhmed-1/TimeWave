@@ -18,6 +18,8 @@ public class MemoryDTO {
     private String description;
     private String date;
     private String location;
+    private Double latitude;
+    private Double longitude;
     private String mood;
     private String type;
     private List<AttachmentDTO> attachments;
@@ -28,6 +30,8 @@ public class MemoryDTO {
         this.description = memory.getDescription();
         this.date = memory.getDate();
         this.location = memory.getLocation();
+        this.latitude = memory.getLatitude();
+        this.longitude = memory.getLongitude();
         this.mood = memory.getMood();
         this.attachments = memory.getAttachments().stream()
                 .map(AttachmentDTO::new)

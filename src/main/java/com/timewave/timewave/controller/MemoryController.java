@@ -40,7 +40,10 @@ public class MemoryController {
                                           @RequestParam(required = false) String content,
                                           @RequestParam String location,
                                           @RequestParam(required = false) MultipartFile photo,
-                                          @RequestParam(required = false) MultipartFile audio) {
+                                          @RequestParam(required = false) MultipartFile audio,
+                                          @RequestParam(required = false) Double latitude,
+                                          @RequestParam(required = false) Double longitude
+    ){
         try {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             User user = userRepository.findByEmail(email)
@@ -51,6 +54,8 @@ public class MemoryController {
             memory.setDescription(content); // or store as description
             memory.setLocation(location);
             memory.setUser(user);
+            memory.setLatitude(latitude);
+            memory.setLongitude(longitude);
 
             // Create attachment list
             List<Attachment> attachments = new ArrayList<>();

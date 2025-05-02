@@ -86,16 +86,26 @@ document.addEventListener("DOMContentLoaded", function () {
         const text = document.getElementById("entryText").value;
         const photo = document.getElementById("entryPhoto").files[0];
         const location = document.getElementById("entryLocation").value;
+        const latitude = document.getElementById("latitude").value;
+        const longitude = document.getElementById("longitude").value;
 
         const formData = new FormData();
         formData.append("title", title);
         formData.append("location", location);
+        formData.append("latitude", latitude);
+        formData.append("longitude", longitude);
         formData.append("type", type);
 
         if (type === "text") {
             formData.append("content", text);
         } else if (type === "photo" && photo) {
             formData.append("photo", photo);
+        }
+        // reset location picker
+        pickerMap.setView([25.2048, 55.2708], 10);
+        if(locationMarker){
+            pickerMap.removeLayer(locationMarker);
+            locationMarker = null;
         }
 
         // Append recorded audio if available
@@ -176,6 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
         container.prepend(div);
     }
 
+
     // Load existing memories on page load
     fetch("/api/memories", {
         headers: {
@@ -189,36 +200,98 @@ document.addEventListener("DOMContentLoaded", function () {
             return res.json();
         })
         .then(data => {
-            data.forEach(appendMemoryToRecent);
-        })
+            const container = document.getElementById("mini-cards");
+            data.forEach(memory => {
+                if (memory.latitude && memory.longitude && !isNaN(memory.latitude) && mainMap) {
+                    const marker = L.marker([memory.latitude, memory.longitude])
+                        .addTo(mainMap)
+                        .bindPopup(`<strong>${memory.title}</strong><br>${memory.location || ""}`);
+                }
+            });
+            document.getElementById("mapSection").style.display = "block";
+            document.getElementById("mapSection").scrollIntoView({behavior: "smooth", block: "start"});
+
+            // Add marker to map
+
+            })
         .catch(err => {
             console.error("Error loading memories:", err.message);
             alert("Session expired. Please log in again.");
             window.location.href = "/login";
         });
-
-    // Map functionality
-    const mapButton = document.querySelector('#mapTab');
-    const mapDiv = document.getElementById('map');
+    let mainMap;
     let mapInitialized = false;
 
-    if (mapButton) {
-        mapButton.addEventListener('click', () => {
-            mapDiv.style.display = 'block';
+    const mapButton = document.getElementById("mapTab");
+    const mapSection = document.getElementById("mapSection");
+    const memoryFormSection = document.querySelector(".form-card");
+    mapButton.addEventListener('click', () => {
+        const isHidden = mapSection.classList.contains("hidden");
+
+        if (isHidden) {
+            mapSection.classList.remove("hidden");
+            memoryFormSection.classList.add("hidden");
             if (!mapInitialized) {
-                const map = L.map('map').setView([25.2048, 55.2708], 12);
+                mainMap = L.map('map').setView([25.2048, 55.2708], 10);
+
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; OpenStreetMap contributors'
-                }).addTo(map);
-                L.marker([25.2048, 55.2708]).addTo(map)
-                    .bindPopup('Dubai')
-                    .openPopup();
+                }).addTo(mainMap);
+
+                fetch("/api/memories", {
+                    method: "GET",
+                    headers: { "Authorization": "Bearer " + token },
+                    credentials: "include"
+                })
+                    .then(res => res.json())
+                    .then(memories => {
+                        memories.forEach(memory => {
+                            if (memory.latitude && memory.longitude) {
+                                L.marker([memory.latitude, memory.longitude])
+                                    .addTo(mainMap)
+                                    .bindPopup(`<strong>${memory.title}</strong><br>${memory.location || ""}`);
+                            }
+                        });
+                    });
+
                 mapInitialized = true;
             }
-        });
-    } else {
-        console.warn("Map button with id 'mapTab' not found.");
-    }
+
+            setTimeout(() => mainMap.invalidateSize(), 200);
+            mapSection.scrollIntoView({ behavior: "smooth" });
+
+        } else {
+            mapSection.classList.add("hidden");
+            memoryFormSection.classList.remove("hidden");
+            memoryFormSection.scrollIntoView({behavior:"smooth"});
+        }
+    });
+
+
+    // map location picker
+
+    const pickerMap = L.map('locationPickerMap', {
+        center: [25.2048, 55.2708],
+        zoom: 10
+    });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(pickerMap);
+
+    let locationMarker;
+
+    pickerMap.on('click', function(e) {
+        const { lat, lng } = e.latlng;
+
+        if (!locationMarker) {
+            locationMarker = L.marker([lat, lng]).addTo(pickerMap);
+        } else {
+            locationMarker.setLatLng([lat, lng]);
+        }
+
+        document.getElementById('latitude').value = lat.toFixed(6);
+        document.getElementById('longitude').value = lng.toFixed(6);
+    });
 
     // Color Customization
     const customizeBtn = document.getElementById('customizeBtn');
